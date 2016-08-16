@@ -40,24 +40,6 @@ const list = function (callback) {
   })
 }
 
-// TODO: function returning spaced repetition dates (using moment)
-// console.log(moment().format())
-
-const createEvent = (summary, description, startDate, id) => {
-  return {
-    summary,
-    description: `${EVENT_NAME_PREFIX}_${id} ${description}`,
-    'start': {'dateTime': startDate.format()},
-    'end': {'dateTime': moment(startDate).add(1, 'hours').format()},
-    'reminders': {
-      'useDefault': false,
-      'overrides': [
-        {'method': 'popup', 'minutes': 0}
-      ]
-    }
-  }
-}
-
 const remove = (eventId) => {
   calendar.events.delete({
     auth: auth.oauth2Client,
@@ -82,6 +64,21 @@ const removeBySpacedId = function (spacedId) {
   })
 }
 
+const createEvent = (summary, description, startDate, id) => {
+  return {
+    summary,
+    description: `${EVENT_NAME_PREFIX}_${id} ${description}`,
+    'start': {'dateTime': startDate.format()},
+    'end': {'dateTime': moment(startDate).add(1, 'hours').format()},
+    'reminders': {
+      'useDefault': false,
+      'overrides': [
+        {'method': 'popup', 'minutes': 0}
+      ]
+    }
+  }
+}
+
 const add = function (event) {
   calendar.events.insert({
     auth: auth.oauth2Client,
@@ -92,13 +89,21 @@ const add = function (event) {
       console.log('Calendar service err (adding event): ' + err)
       return
     }
-    console.log('Event created: %s', event.htmlLink)
+    console.log('Event created:', event.start.dateTime)
   })
+}
+
+// TODO: function returning spaced repetition dates (using moment)
+// console.log(moment().format())
+
+const addMany = function (summary, description, id, howMany) {
+  for (var i = 1; i < howMany + 1; i++) {
+    add(createEvent(summary, description, moment().add(i, 'days'), id))
+  }
 }
 
 module.exports = {
   list,
-  add,
-  removeBySpacedId,
-  createEvent
+  addMany,
+  removeBySpacedId
 }

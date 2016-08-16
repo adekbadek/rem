@@ -33,11 +33,10 @@ app.get('/', function (req, res) {
 
 // run directly in script
 auth.authorize(null, () => {
-  // events.add(
-  //   events.createEvent('Summmary here', 'Desc here', moment().add(1, 'days'), 1)
-  // )
 
-  events.removeBySpacedId('SPC_1')
+  events.addMany('title', 'descr here', 1, 4)
+  // events.removeBySpacedId('SPC_1')
+
 })
 
 app.listen(3000)
