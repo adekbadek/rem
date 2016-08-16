@@ -39,8 +39,9 @@ app.get('/authcallback', function (req, res) {
 
 app.get('/list', function (req, res) {
   authorize(res, () => {
-    retrieveEvents()
-    return res.send('list events')
+    retrieveEvents((events) => {
+      return res.send(events)
+    })
   })
 })
 
@@ -111,7 +112,7 @@ let newEvent = {
   }
 }
 
-var addEvent = function (event) {
+const addEvent = function (event) {
   calendar.events.insert({
     auth: oauth2Client,
     calendarId: 'primary',
@@ -125,7 +126,7 @@ var addEvent = function (event) {
   })
 }
 
-var retrieveEvents = function () {
+const retrieveEvents = function (callback) {
   calendar.events.list({
     auth: oauth2Client,
     calendarId: 'primary',
@@ -135,19 +136,21 @@ var retrieveEvents = function () {
     orderBy: 'startTime'
   }, function (err, response) {
     if (err) {
-      console.log('The API returned an error: ' + err)
+      console.log('The API returned an error:', err)
       return
     }
-    var events = response.items
-    if (events.length === 0) {
+    if (response.items.length === 0) {
       console.log('No upcoming events found.')
     } else {
-      console.log('Upcoming 5 events:')
-      for (var i = 0; i < events.length; i++) {
-        var event = events[i]
-        var start = event.start.dateTime || event.start.date
-        console.log('%s - %s', start, event.summary)
-      }
+      const eventList = []
+      response.items.map((event) => {
+        eventList.push({
+          summary: event.summary,
+          start: event.start.dateTime || event.start.date,
+          end: event.end.dateTime || event.end.date
+        })
+      })
+      callback(eventList)
     }
   })
 }
