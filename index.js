@@ -37,32 +37,38 @@ app.get('/authcallback', function (req, res) {
   })
 })
 
-app.get('/', function (req, res) {
-
+app.get('/list', function (req, res) {
+  authorize(res, () => {
+    retrieveEvents()
+    return res.send('list events')
+  })
 })
 
 app.get('/', function (req, res) {
+  authorize(res, () => {
+    // addEvent(newEvent)
+
+    return res.send('auth successful')
+  })
+})
+
+const authorize = function (res, callback) {
   // if auth via stored tokens is possible, do stuff
   readTokens(
     () => {
       console.log('tokens read, authed')
-
-      retrieveEvents()
-      addEvent(newEvent)
-
-      return res.send('auth successful')
+      callback()
     },
     () => {
       console.log('couldn\'t read tokens from file, proceeding to auth')
       return res.redirect(AUTH_URL)
     }
   )
-})
+}
 
 // read/write creds
 const storeTokens = (tokens) => {
   fs.writeFile(TOKEN_PATH, JSON.stringify(tokens))
-  console.log('Tokens stored to ' + TOKEN_PATH)
 }
 const readTokens = (successCallback, errorCallback) => {
   fs.readFile(TOKEN_PATH, 'utf8', (err, tokens) => {
@@ -87,6 +93,7 @@ const readTokens = (successCallback, errorCallback) => {
   })
 }
 
+// TODO: a function that returns event
 let newEvent = {
   'summary': 'Test event hello',
   'description': 'Here is a desctiption for the event',
@@ -123,7 +130,7 @@ var retrieveEvents = function () {
     auth: oauth2Client,
     calendarId: 'primary',
     timeMin: (new Date()).toISOString(),
-    maxResults: 10,
+    maxResults: 5,
     singleEvents: true,
     orderBy: 'startTime'
   }, function (err, response) {
@@ -135,7 +142,7 @@ var retrieveEvents = function () {
     if (events.length === 0) {
       console.log('No upcoming events found.')
     } else {
-      console.log('Upcoming 10 events:')
+      console.log('Upcoming 5 events:')
       for (var i = 0; i < events.length; i++) {
         var event = events[i]
         var start = event.start.dateTime || event.start.date
