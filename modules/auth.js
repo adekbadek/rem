@@ -25,21 +25,28 @@ const authorize = function (res, callback) {
       callback()
     },
     () => {
-      console.log('couldn\'t read tokens from file, proceeding to auth')
-      return res.redirect(AUTH_URL)
+      if (res !== null) {
+        console.log('couldn\'t read tokens from file, proceeding to auth')
+        return res.redirect(AUTH_URL)
+      } else {
+        console.log('you gotta auth via browser')
+        return
+      }
     }
   )
 }
 
 // read/write creds
 const storeTokens = (tokens) => {
-  fs.writeFile(TOKEN_PATH, JSON.stringify(tokens))
+  if (tokens && tokens.length > 0) {
+    fs.writeFile(TOKEN_PATH, JSON.stringify(tokens))
+  }
 }
 const readTokens = (successCallback, errorCallback) => {
   fs.readFile(TOKEN_PATH, 'utf8', (err, tokens) => {
-    if (err) {
+    if ((tokens !== undefined && tokens.length < 1) || err) {
       errorCallback()
-      return err
+      return
     }
 
     oauth2Client.setCredentials(JSON.parse(tokens))

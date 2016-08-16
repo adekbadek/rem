@@ -4,10 +4,13 @@ const moment = require('moment')
 
 const auth = require('./auth.js')
 
-const retrieve = function (callback) {
+const EVENT_NAME_PREFIX = 'SPC'
+const CALENDAR_ID = 'primary'
+
+const list = function (callback) {
   calendar.events.list({
     auth: auth.oauth2Client,
-    calendarId: 'primary',
+    calendarId: CALENDAR_ID,
     timeMin: (new Date()).toISOString(),
     maxResults: 5,
     singleEvents: true,
@@ -22,11 +25,15 @@ const retrieve = function (callback) {
     } else {
       const eventList = []
       response.items.map((event) => {
-        eventList.push({
-          summary: event.summary,
-          start: event.start.dateTime || event.start.date,
-          end: event.end.dateTime || event.end.date
-        })
+        if (event.description !== undefined && event.description.indexOf(EVENT_NAME_PREFIX) >= 0) {
+          eventList.push({
+            id: event.id,
+            spacedId: event.description.match(/^[\w]*_[0-9]*/)[0],
+            summary: event.summary,
+            start: event.start.dateTime || event.start.date,
+            end: event.end.dateTime || event.end.date
+          })
+        }
       })
       callback(eventList)
     }
@@ -34,34 +41,55 @@ const retrieve = function (callback) {
 }
 
 // TODO: function returning spaced repetition dates (using moment)
-console.log(moment().format())
+// console.log(moment().format())
 
-// TODO: a function that returns an event
-let newEvent = {
-  'summary': 'Test event hello',
-  'description': 'Here is a desctiption for the event',
-  'start': {
-    'dateTime': '2016-08-17T09:00:00-04:00'
-  },
-  'end': {
-    'dateTime': '2016-08-17T09:30:00-04:00'
-  },
-  'reminders': {
-    'useDefault': false,
-    'overrides': [
-      {'method': 'popup', 'minutes': 10}
-    ]
+const createEvent = (summary, description, startDate, id) => {
+  return {
+    summary,
+    description: `${EVENT_NAME_PREFIX}_${id} ${description}`,
+    'start': {'dateTime': startDate.format()},
+    'end': {'dateTime': moment(startDate).add(1, 'hours').format()},
+    'reminders': {
+      'useDefault': false,
+      'overrides': [
+        {'method': 'popup', 'minutes': 0}
+      ]
+    }
   }
+}
+
+const remove = (eventId) => {
+  calendar.events.delete({
+    auth: auth.oauth2Client,
+    calendarId: CALENDAR_ID,
+    eventId
+  }, (err) => {
+    if (err) {
+      console.log('Calendar service err (removing event): ' + err)
+      return
+    }
+    console.log('removed event', eventId)
+  })
+}
+
+const removeBySpacedId = function (spacedId) {
+  list((eventsList) => {
+    eventsList.map((event) => {
+      if (event.spacedId === spacedId) {
+        remove(event.id)
+      }
+    })
+  })
 }
 
 const add = function (event) {
   calendar.events.insert({
     auth: auth.oauth2Client,
-    calendarId: 'primary',
+    calendarId: CALENDAR_ID,
     resource: event
   }, function (err, event) {
     if (err) {
-      console.log('There was an error contacting the Calendar service: ' + err)
+      console.log('Calendar service err (adding event): ' + err)
       return
     }
     console.log('Event created: %s', event.htmlLink)
@@ -69,6 +97,8 @@ const add = function (event) {
 }
 
 module.exports = {
-  retrieve,
-  add
+  list,
+  add,
+  removeBySpacedId,
+  createEvent
 }

@@ -1,9 +1,9 @@
 const express = require('express')
+const moment = require('moment')
 
 const auth = require('./modules/auth.js')
 const events = require('./modules/events.js')
 
-// init express
 const app = express()
 
 // endpoint hit on OAuth callback:
@@ -19,7 +19,7 @@ app.get('/authcallback', function (req, res) {
 
 app.get('/list', function (req, res) {
   auth.authorize(res, () => {
-    events.retrieve((events) => {
+    events.list((events) => {
       return res.send(events)
     })
   })
@@ -27,10 +27,17 @@ app.get('/list', function (req, res) {
 
 app.get('/', function (req, res) {
   auth.authorize(res, () => {
-    // addEvent(newEvent)
-
     return res.send('auth successful')
   })
+})
+
+// run directly in script
+auth.authorize(null, () => {
+  // events.add(
+  //   events.createEvent('Summmary here', 'Desc here', moment().add(1, 'days'), 1)
+  // )
+
+  events.removeBySpacedId('SPC_1')
 })
 
 app.listen(3000)
