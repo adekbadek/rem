@@ -38,7 +38,8 @@ const authorize = function (res, callback) {
 
 // read/write creds
 const storeTokens = (tokens) => {
-  if (tokens && tokens.length > 0) {
+  if (tokens !== undefined) {
+    console.log('storing tokens in', TOKEN_PATH)
     fs.writeFile(TOKEN_PATH, JSON.stringify(tokens))
   }
 }
@@ -48,6 +49,8 @@ const readTokens = (successCallback, errorCallback) => {
       errorCallback()
       return
     }
+
+    console.log('read tokens successfully')
 
     oauth2Client.setCredentials(JSON.parse(tokens))
 
