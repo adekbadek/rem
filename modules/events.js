@@ -95,8 +95,12 @@ const add = function (event) {
   })
 }
 
-// TODO: function returning spaced repetition dates (using moment)
-// console.log(moment().format())
+const getDates = function (intervals, timeFrame) {
+  intervals.map((date) => {
+    intervals[intervals.indexOf(date)] = moment().add(date, timeFrame).startOf('day').hours(17)
+  })
+  return intervals
+}
 
 const addMany = function (summary, description, id, howMany) {
   for (var i = 1; i < howMany + 1; i++) {
