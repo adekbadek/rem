@@ -32,10 +32,13 @@ app.get('/', function (req, res) {
 
 // run directly in script
 auth.authorize(null, () => {
+  // always get the calendar first
+  events.getTheCalendar(() => {
 
-  events.addMany('title', 'descr here', 1, 4)
-  // events.removeBySpacedId('SPC_1')
+    events.removeBySpacedId('SPC_1')
+    events.addMany('review x', 'descr here', {id: 1})
 
+  })
 })
 
 app.listen(3000)

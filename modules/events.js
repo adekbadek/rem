@@ -5,7 +5,8 @@ const moment = require('moment')
 const auth = require('./auth.js')
 
 const EVENT_NAME_PREFIX = 'SPC'
-const CALENDAR_ID = 'primary'
+let CALENDAR_ID = null
+const CALENDAR_SUMMARY = 'spaced repetition reminders'
 
 const list = function (callback) {
   calendar.events.list({
@@ -102,10 +103,41 @@ const getDates = function (intervals, timeFrame) {
   return intervals
 }
 
-const addMany = function (summary, description, id, howMany) {
-  for (var i = 1; i < howMany + 1; i++) {
-    add(createEvent(summary, description, moment().add(i, 'days'), id))
-  }
+// get the calendar and set ID; if none found, create new calendar
+const getTheCalendar = (callback) => {
+  calendar.calendarList.list({
+    auth: auth.oauth2Client
+  }, function (err, calendars) {
+    if (err) {
+      console.log('Calendar service err (listing calendars): ' + err)
+      return
+    }
+    calendars.items.map((calendar) => {
+      if (calendar.summary === CALENDAR_SUMMARY) { CALENDAR_ID = calendar.id }
+    })
+    if (CALENDAR_ID !== null) {
+      console.log('found cal, it\'s id is', CALENDAR_ID)
+      if (callback !== null) { callback() }
+    } else {
+      console.log('did not find cal, creating one')
+
+      calendar.calendars.insert({
+        auth: auth.oauth2Client,
+        resource: {
+          summary: CALENDAR_SUMMARY
+        }
+      }, function (err, calendars) {
+        if (err) {
+          console.log('Calendar service err (adding calendar): ' + err)
+          return
+        }
+        if (callback !== null) { callback() }
+        console.log('created a calendar', calendars)
+      })
+    }
+  })
+}
+
 const addMany = function (summary, description, options) {
   const intervals = [1, 10, 30, 60]
   getDates(intervals, 'days').map((date, i) => {
@@ -116,5 +148,6 @@ const addMany = function (summary, description, options) {
 module.exports = {
   list,
   addMany,
-  removeBySpacedId
+  removeBySpacedId,
+  getTheCalendar
 }
