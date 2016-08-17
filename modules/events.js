@@ -1,17 +1,19 @@
 const google = require('googleapis')
 const calendar = google.calendar('v3')
 const moment = require('moment')
+const storage = require('node-persist')
+const path = require('path')
+storage.initSync({dir: path.join(__dirname, '/../store')})
 
 const auth = require('./auth.js')
 
 const EVENT_NAME_PREFIX = 'SPC'
-let CALENDAR_ID = null
 const CALENDAR_SUMMARY = 'spaced repetition reminders'
 
 const list = function (callback) {
   calendar.events.list({
     auth: auth.oauth2Client,
-    calendarId: CALENDAR_ID,
+    calendarId: storage.getItem('CALENDAR_ID'),
     timeMin: (new Date()).toISOString(),
     // maxResults: 20,
     singleEvents: true,
@@ -45,7 +47,7 @@ const list = function (callback) {
 const remove = (eventId) => {
   calendar.events.delete({
     auth: auth.oauth2Client,
-    calendarId: CALENDAR_ID,
+    calendarId: storage.getItem('CALENDAR_ID'),
     eventId
   }, (err) => {
     if (err) {
@@ -85,7 +87,7 @@ const createEvent = (summary, description, startDate, id) => {
 const add = function (event) {
   calendar.events.insert({
     auth: auth.oauth2Client,
-    calendarId: CALENDAR_ID,
+    calendarId: storage.getItem('CALENDAR_ID'),
     resource: event
   }, function (err, event) {
     if (err) {
@@ -113,10 +115,12 @@ const getTheCalendar = (callback) => {
       return
     }
     calendars.items.map((calendar) => {
-      if (calendar.summary === CALENDAR_SUMMARY) { CALENDAR_ID = calendar.id }
+      if (calendar.summary === CALENDAR_SUMMARY) {
+        storage.setItem('CALENDAR_ID', calendar.id)
+      }
     })
-    if (CALENDAR_ID !== null) {
-      console.log('found cal, it\'s id is', CALENDAR_ID)
+    if (storage.getItem('CALENDAR_ID') !== undefined) {
+      console.log('found cal, it\'s id is', storage.getItem('CALENDAR_ID'))
       if (callback !== null) { callback() }
     } else {
       console.log('did not find cal, creating one')

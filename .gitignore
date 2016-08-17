@@ -2,3 +2,4 @@ node_modules
 calendar-creds.json
 .env
 .colors.js
+store
