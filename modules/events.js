@@ -68,7 +68,7 @@ const list = function (callback) {
     } else {
       const eventList = []
       response.items.map((event) => {
-        if (event.description !== undefined && event.description.indexOf(EVENT_NAME_PREFIX) >= 0) {
+        if (event.description !== undefined && event.description.indexOf(EVENT_NAME_PREFIX) === 0) {
           eventList.push({
             id: event.id,
             spacedId: event.description.match(/^[\w]*_[0-9]*/)[0],
