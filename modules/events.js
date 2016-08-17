@@ -110,7 +110,7 @@ const createEvent = (summary, description, startDate, id) => {
     summary,
     description: `${EVENT_NAME_PREFIX}_${id} ${description}`,
     'start': {'dateTime': startDate.format()},
-    'end': {'dateTime': moment(startDate).add(1, 'hours').format()},
+    'end': {'dateTime': moment(startDate).add(20, 'minutes').format()},
     'colorId': '10',
     'reminders': {
       'useDefault': false,
@@ -135,21 +135,20 @@ const add = function (event) {
   })
 }
 
-const getDates = function (intervals, timeFrame) {
+const getDates = function (intervals, timeFrame, options) {
   intervals.map((date) => {
-    intervals[intervals.indexOf(date)] = moment().add(date, timeFrame).startOf('day').hours(17)
+    if (options.allEventsAt5pm) {
+      intervals[intervals.indexOf(date)] = moment().add(date, timeFrame).startOf('day').hours(17)
+    } else {
+      intervals[intervals.indexOf(date)] = moment().add(date, timeFrame)
+    }
   })
   return intervals
 }
 
-    } else {
-    }
-  })
-}
-
 const addMany = function (summary, description, options) {
-  const intervals = [1, 10, 30, 60]
-  getDates(intervals, 'days').map((date, i) => {
+  const intervals = options.shortIntervals ? [1, 3, 24, 48] : [1, 10, 30, 60]
+  getDates(intervals, (options.shortIntervals ? 'hours' : 'days'), {allEventsAt5pm: !options.shortIntervals}).map((date, i) => {
     add(createEvent(summary, `(${i + 1}/${intervals.length}) / ${description}`, date, options.id))
   })
 }
