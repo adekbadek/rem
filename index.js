@@ -5,12 +5,20 @@ const events = require('./modules/events.js')
 
 const app = express()
 
+// arguments passed to script (non-web version)
+const args = process.argv.slice(2)
+const mode = args[0]
+const summary = args.slice(1).join(' ')
+
 // get the calendar first
 auth.authorize(null, () => {
   events.getTheCalendar(() => {
 
     events.removeEvents()
-    events.addMany('review x', {shortIntervals: true})
+
+    if (args.length > 2 && mode.length > 0 && summary.length > 0) {
+      events.addMany(summary, {shortIntervals: (mode === 'short')})
+    }
 
   })
 })
