@@ -106,6 +106,11 @@ const addMany = function (summary, description, id, howMany) {
   for (var i = 1; i < howMany + 1; i++) {
     add(createEvent(summary, description, moment().add(i, 'days'), id))
   }
+const addMany = function (summary, description, options) {
+  const intervals = [1, 10, 30, 60]
+  getDates(intervals, 'days').map((date, i) => {
+    add(createEvent(summary, `(${i + 1}/${intervals.length}) / ${description}`, date, options.id))
+  })
 }
 
 module.exports = {
