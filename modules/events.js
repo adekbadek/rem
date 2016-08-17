@@ -71,8 +71,7 @@ const list = function (callback) {
             spacedId: event.description.match(/^[\w]*_[0-9]*/)[0],
             summary: event.summary,
             description: event.description,
-            start: event.start.dateTime || event.start.date,
-            end: event.end.dateTime || event.end.date
+            start: event.start.dateTime || event.start.date
           })
         }
       })
@@ -146,10 +145,10 @@ const getDates = function (intervals, timeFrame, options) {
   return intervals
 }
 
-const addMany = function (summary, description, options) {
+const addMany = function (summary, options) {
   const intervals = options.shortIntervals ? [1, 3, 24, 48] : [1, 10, 30, 60]
   getDates(intervals, (options.shortIntervals ? 'hours' : 'days'), {allEventsAt5pm: !options.shortIntervals}).map((date, i) => {
-    add(createEvent(summary, `(${i + 1}/${intervals.length}) / ${description}`, date, options.id))
+    add(createEvent(summary, `(${i + 1}/${intervals.length})${(options.description === undefined ? '' : ' / ' + options.description)}`, date, options.id))
   })
 }
 

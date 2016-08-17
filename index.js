@@ -9,8 +9,8 @@ const app = express()
 auth.authorize(null, () => {
   events.getTheCalendar(() => {
 
-    // events.removeBySpacedId('SPC_1')
-    events.addMany('review x', 'descr here', {id: 1, shortIntervals: true})
+    events.removeBySpacedId('SPC_1')
+    events.addMany('review x', {id: 1, shortIntervals: true})
 
   })
 })
