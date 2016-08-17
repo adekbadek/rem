@@ -10,6 +10,43 @@ const auth = require('./auth.js')
 const EVENT_NAME_PREFIX = 'SPC'
 const CALENDAR_SUMMARY = 'spaced repetition reminders'
 
+// get the calendar and set ID; if none found, create new calendar
+const getTheCalendar = (callback) => {
+  calendar.calendarList.list({
+    auth: auth.oauth2Client
+  }, function (err, calendars) {
+    if (err) {
+      console.log('Calendar service err (listing calendars): ' + err)
+      return
+    }
+    calendars.items.map((calendar) => {
+      if (calendar.summary === CALENDAR_SUMMARY) {
+        storage.setItem('CALENDAR_ID', calendar.id)
+      }
+    })
+    if (storage.getItem('CALENDAR_ID') !== undefined) {
+      console.log('found cal, it\'s id is', storage.getItem('CALENDAR_ID'))
+      if (callback !== null) { callback() }
+    } else {
+      console.log('did not find cal, creating one')
+
+      calendar.calendars.insert({
+        auth: auth.oauth2Client,
+        resource: {
+          summary: CALENDAR_SUMMARY
+        }
+      }, function (err, calendars) {
+        if (err) {
+          console.log('Calendar service err (adding calendar): ' + err)
+          return
+        }
+        if (callback !== null) { callback() }
+        console.log('created a calendar', calendars)
+      })
+    }
+  })
+}
+
 const list = function (callback) {
   calendar.events.list({
     auth: auth.oauth2Client,
@@ -105,39 +142,7 @@ const getDates = function (intervals, timeFrame) {
   return intervals
 }
 
-// get the calendar and set ID; if none found, create new calendar
-const getTheCalendar = (callback) => {
-  calendar.calendarList.list({
-    auth: auth.oauth2Client
-  }, function (err, calendars) {
-    if (err) {
-      console.log('Calendar service err (listing calendars): ' + err)
-      return
-    }
-    calendars.items.map((calendar) => {
-      if (calendar.summary === CALENDAR_SUMMARY) {
-        storage.setItem('CALENDAR_ID', calendar.id)
-      }
-    })
-    if (storage.getItem('CALENDAR_ID') !== undefined) {
-      console.log('found cal, it\'s id is', storage.getItem('CALENDAR_ID'))
-      if (callback !== null) { callback() }
     } else {
-      console.log('did not find cal, creating one')
-
-      calendar.calendars.insert({
-        auth: auth.oauth2Client,
-        resource: {
-          summary: CALENDAR_SUMMARY
-        }
-      }, function (err, calendars) {
-        if (err) {
-          console.log('Calendar service err (adding calendar): ' + err)
-          return
-        }
-        if (callback !== null) { callback() }
-        console.log('created a calendar', calendars)
-      })
     }
   })
 }

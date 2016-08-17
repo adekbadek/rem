@@ -5,14 +5,19 @@ const events = require('./modules/events.js')
 
 const app = express()
 
-// endpoint hit on OAuth callback:
-app.get('/authcallback', function (req, res) {
-  auth.oauth2Client.getToken(res.req._parsedUrl.query.replace('code=', ''), function (err, tokens) {
-    if (!err) {
-      auth.oauth2Client.setCredentials(tokens)
-      auth.storeTokens(tokens)
-      return res.redirect('/')
-    }
+// get the calendar first
+auth.authorize(null, () => {
+  events.getTheCalendar(() => {
+
+    events.removeBySpacedId('SPC_1')
+    events.addMany('review x', 'descr here', {id: 1})
+
+  })
+})
+
+app.get('/', function (req, res) {
+  auth.authorize(res, () => {
+    return res.send('auth successful')
   })
 })
 
@@ -24,20 +29,14 @@ app.get('/list', function (req, res) {
   })
 })
 
-app.get('/', function (req, res) {
-  auth.authorize(res, () => {
-    return res.send('auth successful')
-  })
-})
-
-// run directly in script
-auth.authorize(null, () => {
-  // always get the calendar first
-  events.getTheCalendar(() => {
-
-    events.removeBySpacedId('SPC_1')
-    events.addMany('review x', 'descr here', {id: 1})
-
+// endpoint hit on OAuth callback:
+app.get('/authcallback', function (req, res) {
+  auth.oauth2Client.getToken(res.req._parsedUrl.query.replace('code=', ''), function (err, tokens) {
+    if (!err) {
+      auth.oauth2Client.setCredentials(tokens)
+      auth.storeTokens(tokens)
+      return res.redirect('/')
+    }
   })
 })
 
