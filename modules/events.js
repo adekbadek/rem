@@ -62,6 +62,7 @@ const list = function (callback) {
     }
     if (response.items.length === 0) {
       console.log('No upcoming events found.')
+      callback([])
     } else {
       const eventList = []
       response.items.map((event) => {
@@ -146,10 +147,13 @@ const getDates = function (intervals, timeFrame, options) {
 }
 
 const addMany = function (summary, options) {
+  let id = storage.getItem('CURRENT_ID') || 0
   const intervals = options.shortIntervals ? [1, 3, 24, 48] : [1, 10, 30, 60]
   getDates(intervals, (options.shortIntervals ? 'hours' : 'days'), {allEventsAt5pm: !options.shortIntervals}).map((date, i) => {
-    add(createEvent(summary, `(${i + 1}/${intervals.length})${(options.description === undefined ? '' : ' / ' + options.description)}`, date, options.id))
+    add(createEvent(summary, `(${i + 1}/${intervals.length})${(options.description === undefined ? '' : ' / ' + options.description)}`, date, id))
   })
+  id = id + 1
+  storage.setItem('CURRENT_ID', id)
 }
 
 module.exports = {

@@ -10,7 +10,7 @@ auth.authorize(null, () => {
   events.getTheCalendar(() => {
 
     events.removeBySpacedId('SPC_1')
-    events.addMany('review x', {id: 1, shortIntervals: true})
+    events.addMany('review x', {shortIntervals: true})
 
   })
 })
