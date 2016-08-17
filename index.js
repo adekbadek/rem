@@ -11,15 +11,21 @@ const app = express()
 const args = process.argv.slice(2)
 const mode = args[0]
 const summary = args.slice(1).join(' ')
+const CALLED_AS_SCRIPT = (args.length >= 2 && mode.length > 0 && summary.length > 0)
 
 // get the calendar first
 auth.authorize(null, () => {
   events.getTheCalendar(() => {
 
-    events.removeEvents()
+    // NOTE: beware
+    // events.removeEvents()
 
-    if (args.length > 2 && mode.length > 0 && summary.length > 0) {
-      events.addMany(summary, {shortIntervals: (mode === 'short')})
+    if (CALLED_AS_SCRIPT) {
+      events.addMany(summary, {shortIntervals: (mode === 'sh')})
+      // TODO: wait for all add/remove callbacks
+      setTimeout(() => {
+        process.exit(-1)
+      }, 10000)
     }
 
   })
@@ -50,4 +56,6 @@ app.get('/authcallback', function (req, res) {
   })
 })
 
-app.listen(3000)
+if (!CALLED_AS_SCRIPT) {
+  app.listen(3000)
+}

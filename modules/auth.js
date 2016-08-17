@@ -7,7 +7,9 @@ const storage = require('node-persist')
 storage.initSync({dir: path.join(__dirname, '/../store')})
 
 // load env variables
-require('dotenv').load()
+const dotenv = require('dotenv')
+dotenv.config({path: path.join(__dirname, '/../.env')})
+dotenv.load()
 
 // setting up OAuth
 const oauth2Client = new OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URL)
