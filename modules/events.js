@@ -95,10 +95,12 @@ const remove = (eventId) => {
   })
 }
 
-const removeBySpacedId = function (spacedId) {
+const removeEvents = function (spacedId) {
   list((eventsList) => {
     eventsList.map((event) => {
-      if (event.spacedId === spacedId) {
+      if (spacedId !== undefined) {
+        if (event.spacedId === spacedId) { remove(event.id) }
+      } else {
         remove(event.id)
       }
     })
@@ -159,6 +161,6 @@ const addMany = function (summary, options) {
 module.exports = {
   list,
   addMany,
-  removeBySpacedId,
+  removeEvents,
   getTheCalendar
 }
