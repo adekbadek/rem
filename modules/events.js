@@ -12,7 +12,7 @@ const list = function (callback) {
     auth: auth.oauth2Client,
     calendarId: CALENDAR_ID,
     timeMin: (new Date()).toISOString(),
-    maxResults: 5,
+    // maxResults: 20,
     singleEvents: true,
     orderBy: 'startTime'
   }, function (err, response) {
@@ -30,6 +30,7 @@ const list = function (callback) {
             id: event.id,
             spacedId: event.description.match(/^[\w]*_[0-9]*/)[0],
             summary: event.summary,
+            description: event.description,
             start: event.start.dateTime || event.start.date,
             end: event.end.dateTime || event.end.date
           })
@@ -70,6 +71,7 @@ const createEvent = (summary, description, startDate, id) => {
     description: `${EVENT_NAME_PREFIX}_${id} ${description}`,
     'start': {'dateTime': startDate.format()},
     'end': {'dateTime': moment(startDate).add(1, 'hours').format()},
+    'colorId': '10',
     'reminders': {
       'useDefault': false,
       'overrides': [

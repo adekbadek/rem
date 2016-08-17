@@ -1,5 +1,4 @@
 const express = require('express')
-const moment = require('moment')
 
 const auth = require('./modules/auth.js')
 const events = require('./modules/events.js')
