@@ -1,12 +1,11 @@
 const google = require('googleapis')
 const OAuth2 = google.auth.OAuth2
-const fs = require('fs')
 const path = require('path')
+const storage = require('node-persist')
+storage.initSync({dir: path.join(__dirname, '/../store')})
 
 // load env variables
 require('dotenv').load()
-
-const TOKEN_PATH = path.join(__dirname, '/../calendar-creds.json')
 
 // setting up OAuth
 const oauth2Client = new OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URL)
@@ -39,32 +38,30 @@ const authorize = function (res, callback) {
 // read/write creds
 const storeTokens = (tokens) => {
   if (tokens !== undefined) {
-    console.log('storing tokens in', TOKEN_PATH)
-    fs.writeFile(TOKEN_PATH, JSON.stringify(tokens))
+    console.log('storing tokens in store')
+    storage.setItem('CREDENTIALS', tokens)
   }
 }
 const readTokens = (successCallback, errorCallback) => {
-  fs.readFile(TOKEN_PATH, 'utf8', (err, tokens) => {
-    if ((tokens !== undefined && tokens.length < 1) || err) {
+  const tokens = storage.getItem('CREDENTIALS')
+  if (tokens === undefined) {
+    errorCallback()
+    return
+  }
+  console.log('read tokens successfully')
+
+  oauth2Client.setCredentials(tokens)
+
+  oauth2Client.refreshAccessToken(function (err, tokens) {
+    if (err) {
       errorCallback()
-      return
+      return err
     }
 
-    console.log('read tokens successfully')
+    oauth2Client.setCredentials(tokens)
+    storeTokens(tokens)
 
-    oauth2Client.setCredentials(JSON.parse(tokens))
-
-    oauth2Client.refreshAccessToken(function (err, tokens) {
-      if (err) {
-        errorCallback()
-        return err
-      }
-
-      oauth2Client.setCredentials(tokens)
-      storeTokens(tokens)
-
-      successCallback()
-    })
+    successCallback()
   })
 }
 
