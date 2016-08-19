@@ -156,8 +156,7 @@ const addMany = function (summary, options) {
   getDates(intervals, (options.shortIntervals ? 'hours' : 'days'), {allEventsAt5pm: !options.shortIntervals}).map((date, i) => {
     add(createEvent(summary, `(${i + 1}/${intervals.length})${(options.description === undefined ? '' : ' / ' + options.description)}`, date, id))
   })
-  id = id + 1
-  storage.setItem('CURRENT_ID', id)
+  storage.setItem('CURRENT_ID', id + 1)
 }
 
 module.exports = {
