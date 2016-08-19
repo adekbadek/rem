@@ -1,15 +1,12 @@
 const auth = require('./auth.js')
 const events = require('./events.js')
 
-// arguments passed to script (non-web version)
-const args = process.argv.slice(2)
-const mode = args[0]
-const summary = args.slice(1).join(' ')
-
-const init = () => {
+// mode is the first argument passed
+// summary is all that follows
+const init = (mode, summary) => {
   if (mode) {
-    // get the calendar first
     auth.authorize(null, () => {
+      // get/create the calendar first
       events.getTheCalendar(() => {
         if (mode === 'remove') {
           console.log('removing all events...')
@@ -24,11 +21,6 @@ const init = () => {
   }
 }
 
-const wasInvokedViaCLI = () => {
-  return args.length >= 2 && mode.length > 0 && summary.length > 0
-}
-
 module.exports = {
-  init,
-  wasInvokedViaCLI
+  init
 }

@@ -11,7 +11,7 @@ const dotenv = require('dotenv')
 dotenv.config({path: path.join(__dirname, '/../.env')})
 dotenv.load()
 
-// setting up OAuth
+// set up OAuth
 const oauth2Client = new OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URL)
 google.options({ auth: oauth2Client }) // set auth as a global default
 //
@@ -21,18 +21,23 @@ const AUTH_URL = oauth2Client.generateAuthUrl({
 })
 
 const authorize = function (res, callback) {
-  // if auth via stored tokens is possible, do stuff
+
+  // TODO: web version - read from localStorage
+
   readTokens(
+    // if auth via stored tokens is possible, do stuff
     () => {
       console.log('tokens read, authed')
       callback()
     },
+    // otherwise redirect to auth (web version) or start server (CLI version)
     () => {
       if (res !== null) {
         console.log('couldn\'t read tokens from file, proceeding to auth')
         return res.redirect(AUTH_URL)
       } else {
-        console.log('you gotta auth via browser')
+        console.log('authenticate via browser (localhost:3000/auth) and retry')
+        require('./server.js').init()
         return
       }
     }

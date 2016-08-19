@@ -12,15 +12,16 @@ const auth = require('./auth.js')
 const EVENT_NAME_PREFIX = 'SPC'
 const CALENDAR_SUMMARY = 'spaced repetition reminders'
 
-// get the calendar and set ID; if none found, create new calendar
+// get the calendar by ID from storage; if none found, create new calendar
 const getTheCalendar = (callback) => {
   calendar.calendarList.list({
     auth: auth.oauth2Client
   }, function (err, calendars) {
     if (err) {
-      console.log('Calendar service err (listing calendars): ' + err)
+      console.log('Calendar service err (getting calendars): ' + err)
       return
     }
+    // go through user's calendars to find the rem calendar
     calendars.items.map((calendar) => {
       if (calendar.summary === CALENDAR_SUMMARY) {
         storage.setItem('CALENDAR_ID', calendar.id)
@@ -49,6 +50,7 @@ const getTheCalendar = (callback) => {
   })
 }
 
+// list events from the calendar
 const list = function (callback) {
   calendar.events.list({
     auth: auth.oauth2Client,
@@ -83,6 +85,7 @@ const list = function (callback) {
   })
 }
 
+// helper function for removeEvents
 const remove = (eventId) => {
   calendar.events.delete({
     auth: auth.oauth2Client,
@@ -97,6 +100,7 @@ const remove = (eventId) => {
   })
 }
 
+// remove events - all or by ID
 const removeEvents = function (spacedId) {
   list((eventsList) => {
     eventsList.map((event) => {
@@ -109,6 +113,7 @@ const removeEvents = function (spacedId) {
   })
 }
 
+// helper function for add
 const createEvent = (summary, description, startDate, id) => {
   return {
     summary,
@@ -125,6 +130,7 @@ const createEvent = (summary, description, startDate, id) => {
   }
 }
 
+// add an event to calendar
 const add = function (event) {
   calendar.events.insert({
     auth: auth.oauth2Client,
@@ -139,6 +145,7 @@ const add = function (event) {
   })
 }
 
+// get dates for spaced repetition reminders
 const getDates = function (intervals, timeFrame, options) {
   intervals.map((date) => {
     if (options.allEventsAt5pm) {
@@ -150,6 +157,7 @@ const getDates = function (intervals, timeFrame, options) {
   return intervals
 }
 
+// add multiple events to calendar
 const addMany = function (summary, options) {
   let id = storage.getItem('CURRENT_ID') || 0
   const intervals = options.shortIntervals ? [1, 3, 24, 48] : [1, 10, 30, 60]
