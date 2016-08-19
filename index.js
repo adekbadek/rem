@@ -1,35 +1,14 @@
 'use strict'
 
 const express = require('express')
+const path = require('path')
 
 const auth = require('./modules/auth.js')
 const events = require('./modules/events.js')
+const cli = require('./modules/cli.js')
+cli.init()
 
 const app = express()
-
-// arguments passed to script (non-web version)
-const args = process.argv.slice(2)
-const mode = args[0]
-const summary = args.slice(1).join(' ')
-const CALLED_AS_SCRIPT = (args.length >= 2 && mode.length > 0 && summary.length > 0)
-
-// get the calendar first
-auth.authorize(null, () => {
-  events.getTheCalendar(() => {
-
-    // NOTE: beware
-    // events.removeEvents()
-
-    if (CALLED_AS_SCRIPT) {
-      events.addMany(summary, {shortIntervals: (mode === 'sh')})
-      // TODO: wait for all add/remove callbacks
-      setTimeout(() => {
-        process.exit(-1)
-      }, 10000)
-    }
-
-  })
-})
 
 app.get('/', function (req, res) {
   auth.authorize(res, () => {
@@ -56,6 +35,7 @@ app.get('/authcallback', function (req, res) {
   })
 })
 
-if (!CALLED_AS_SCRIPT) {
+if (!cli.wasInvokedViaCLI()) {
+  console.log('starting a server at localhost:3000')
   app.listen(3000)
 }
