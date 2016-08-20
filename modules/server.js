@@ -15,19 +15,23 @@ const init = () => {
     return res.sendFile(path.join(__dirname, '/../front/index.html'))
   })
 
-  // url for CLI authorization
-  app.get('/auth', function (req, res) {
-    auth.authorize(res, () => {
-      return res.send('authorization successful')
-    })
-  })
-
   // list all events created with rem
   app.get('/list', function (req, res) {
-    auth.authorize(res, () => {
+    auth.authorize(res, req, () => {
       events.list((events) => {
         return res.send(events)
       })
+    })
+  })
+
+  // url for authorizing app
+  app.get('/auth', function (req, res) {
+    auth.authorize(res, req, () => {
+      if (req && req.cookies.CREDENTIALS) {
+        return res.redirect('/')
+      } else {
+        return res.send('CLI authorization successful')
+      }
     })
   })
 

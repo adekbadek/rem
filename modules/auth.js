@@ -27,17 +27,22 @@ const authorize = function (res, req, callback) {
     // if auth via tokens is possible, carry on
     () => {
       console.log('tokens read, authed')
-      callback()
+      return callback()
     },
     // otherwise redirect to auth (web version) or start server (CLI version)
     () => {
-      if (res !== null) {
-        console.log('couldn\'t read tokens from file, proceeding to auth')
-        return res.redirect(AUTH_URL)
+      if (global.IS_CLI) {
+        if (res !== null) {
+          console.log('couldn\'t read tokens from file, proceeding to auth')
+          return res.redirect(AUTH_URL)
+        } else {
+          console.log('authenticate via browser (localhost:3000/auth) and retry')
+          require('./server.js').init()
+          return
+        }
       } else {
-        console.log('authenticate via browser (localhost:3000/auth) and retry')
-        require('./server.js').init()
-        return
+        console.log('couldn\'t read tokens from cookie, proceeding to auth')
+        return res.redirect(AUTH_URL)
       }
     }
   )
@@ -56,8 +61,7 @@ const storeTokens = (tokens, res = null) => {
 const readTokens = (res, req, successCallback, errorCallback) => {
   const tokens = store.get('CREDENTIALS', req)
   if (tokens === undefined) {
-    errorCallback()
-    return
+    return errorCallback()
   }
   console.log('read tokens successfully')
 
@@ -79,6 +83,5 @@ const readTokens = (res, req, successCallback, errorCallback) => {
 module.exports = {
   oauth2Client,
   authorize,
-  storeTokens,
-  readTokens
+  storeTokens
 }
