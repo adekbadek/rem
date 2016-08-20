@@ -18,7 +18,7 @@ const init = () => {
   // list all events created with rem
   app.get('/list', function (req, res) {
     auth.authorize(res, req, () => {
-      events.list((events) => {
+      events.list(req, (events) => {
         return res.send(events)
       })
     })
