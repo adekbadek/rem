@@ -31,6 +31,15 @@ const init = () => {
     })
   })
 
+  // clear cookie
+  app.get('/forget', function (req, res) {
+    console.log('remove cookies')
+    res.clearCookie('CREDENTIALS')
+    res.clearCookie('CALENDAR_ID')
+    res.clearCookie('CURRENT_ID')
+    return res.redirect('/')
+  })
+
   // endpoint hit on OAuth callback:
   app.get('/authcallback', function (req, res) {
     auth.oauth2Client.getToken(res.req._parsedUrl.query.replace('code=', ''), function (err, tokens) {
