@@ -3,17 +3,15 @@
 const google = require('googleapis')
 const calendar = google.calendar('v3')
 const moment = require('moment')
-const storage = require('node-persist')
-const path = require('path')
-storage.initSync({dir: path.join(__dirname, '/../store')})
 
 const auth = require('./auth.js')
+const store = require('./store.js')
 
 const EVENT_NAME_PREFIX = 'SPC'
 const CALENDAR_SUMMARY = 'spaced repetition reminders'
 
 // get the calendar by ID from storage; if none found, create new calendar
-const getTheCalendar = (callback) => {
+const getTheCalendar = (req, res, callback) => {
   calendar.calendarList.list({
     auth: auth.oauth2Client
   }, function (err, calendars) {
@@ -22,13 +20,15 @@ const getTheCalendar = (callback) => {
       return
     }
     // go through user's calendars to find the rem calendar
+    let foundTheCalendar = false
     calendars.items.map((calendar) => {
       if (calendar.summary === CALENDAR_SUMMARY) {
-        storage.setItem('CALENDAR_ID', calendar.id)
+        foundTheCalendar = true
+        store.set('CALENDAR_ID', calendar.id, res)
       }
     })
-    if (storage.getItem('CALENDAR_ID') !== undefined) {
-      console.log('found cal, it\'s id is', storage.getItem('CALENDAR_ID'))
+    if (foundTheCalendar) {
+      console.log('found cal, it\'s id is', store.get('CALENDAR_ID', req))
       if (callback !== null) { callback() }
     } else {
       console.log('did not find cal, creating one')
@@ -44,7 +44,7 @@ const getTheCalendar = (callback) => {
           return
         }
         if (callback !== null) { callback() }
-        console.log('created a calendar', calendars)
+        console.log('created a calendar with id', calendars.id)
       })
     }
   })
@@ -54,7 +54,7 @@ const getTheCalendar = (callback) => {
 const list = function (callback) {
   calendar.events.list({
     auth: auth.oauth2Client,
-    calendarId: storage.getItem('CALENDAR_ID'),
+    calendarId: store.get('CALENDAR_ID'),
     timeMin: (new Date()).toISOString(),
     // maxResults: 20,
     singleEvents: true,
@@ -89,7 +89,7 @@ const list = function (callback) {
 const remove = (eventId) => {
   calendar.events.delete({
     auth: auth.oauth2Client,
-    calendarId: storage.getItem('CALENDAR_ID'),
+    calendarId: store.get('CALENDAR_ID'),
     eventId
   }, (err) => {
     if (err) {
@@ -134,7 +134,7 @@ const createEvent = (summary, description, startDate, id) => {
 const add = function (event) {
   calendar.events.insert({
     auth: auth.oauth2Client,
-    calendarId: storage.getItem('CALENDAR_ID'),
+    calendarId: store.get('CALENDAR_ID'),
     resource: event
   }, function (err, event) {
     if (err) {
@@ -159,12 +159,12 @@ const getDates = function (intervals, timeFrame, options) {
 
 // add multiple events to calendar
 const addMany = function (summary, options) {
-  let id = storage.getItem('CURRENT_ID') || 0
+  let id = store.get('CURRENT_ID') || 0
   const intervals = options.shortIntervals ? [1, 3, 24, 48] : [1, 10, 30, 60]
   getDates(intervals, (options.shortIntervals ? 'hours' : 'days'), {allEventsAt5pm: !options.shortIntervals}).map((date, i) => {
     add(createEvent(summary, `(${i + 1}/${intervals.length})${(options.description === undefined ? '' : ' / ' + options.description)}`, date, id))
   })
-  storage.setItem('CURRENT_ID', id + 1)
+  store.set('CURRENT_ID', id + 1)
 }
 
 module.exports = {

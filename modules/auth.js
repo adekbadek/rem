@@ -3,8 +3,8 @@
 const google = require('googleapis')
 const OAuth2 = google.auth.OAuth2
 const path = require('path')
-const storage = require('node-persist')
-storage.initSync({dir: path.join(__dirname, '/../store')})
+
+const store = require('./store.js')
 
 // load env variables
 const dotenv = require('dotenv')
@@ -20,12 +20,11 @@ const AUTH_URL = oauth2Client.generateAuthUrl({
   scope: 'https://www.googleapis.com/auth/calendar'
 })
 
-const authorize = function (res, callback) {
-
-  // TODO: web version - read from localStorage
-
+const authorize = function (res, req, callback) {
   readTokens(
-    // if auth via stored tokens is possible, do stuff
+    res,
+    req,
+    // if auth via tokens is possible, carry on
     () => {
       console.log('tokens read, authed')
       callback()
@@ -45,14 +44,17 @@ const authorize = function (res, callback) {
 }
 
 // read/write creds
-const storeTokens = (tokens) => {
-  if (tokens !== undefined) {
+const storeTokens = (tokens, res = null) => {
+  if (global.IS_CLI && tokens !== undefined) {
     console.log('storing tokens in store')
-    storage.setItem('CREDENTIALS', tokens)
+    store.set('CREDENTIALS', tokens)
+  } else if (res) {
+    console.log('storing tokens in cookie')
+    store.set('CREDENTIALS', tokens, res)
   }
 }
-const readTokens = (successCallback, errorCallback) => {
-  const tokens = storage.getItem('CREDENTIALS')
+const readTokens = (res, req, successCallback, errorCallback) => {
+  const tokens = store.get('CREDENTIALS', req)
   if (tokens === undefined) {
     errorCallback()
     return
@@ -68,7 +70,7 @@ const readTokens = (successCallback, errorCallback) => {
     }
 
     oauth2Client.setCredentials(tokens)
-    storeTokens(tokens)
+    storeTokens(tokens, res)
 
     successCallback()
   })

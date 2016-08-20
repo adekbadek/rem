@@ -1,4 +1,5 @@
 const express = require('express')
+const cookieParser = require('cookie-parser')
 const path = require('path')
 
 const init = () => {
@@ -7,6 +8,7 @@ const init = () => {
   const auth = require('./auth.js')
 
   const app = express()
+  app.use(cookieParser())
 
   // web app starting point
   app.get('/', function (req, res) {
@@ -34,8 +36,8 @@ const init = () => {
     auth.oauth2Client.getToken(res.req._parsedUrl.query.replace('code=', ''), function (err, tokens) {
       if (!err) {
         auth.oauth2Client.setCredentials(tokens)
-        auth.storeTokens(tokens)
         return res.redirect('/auth')
+        auth.storeTokens(tokens, res)
       }
     })
   })
