@@ -45,8 +45,12 @@ const init = () => {
     auth.oauth2Client.getToken(res.req._parsedUrl.query.replace('code=', ''), function (err, tokens) {
       if (!err) {
         auth.oauth2Client.setCredentials(tokens)
-        return res.redirect('/auth')
         auth.storeTokens(tokens, res)
+
+        // get/create the calendar first
+        events.getTheCalendar(req, res, () => {
+          return res.redirect('/auth')
+        })
       }
     })
   })

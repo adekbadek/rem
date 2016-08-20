@@ -14,5 +14,3 @@ if (args.length >= 1) {
   console.log('init as SERVER')
   require('./modules/server.js').init()
 }
-
-// NOTE after auth, get the calendar
