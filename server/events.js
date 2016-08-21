@@ -51,10 +51,10 @@ const getTheCalendar = (req, res, callback) => {
 }
 
 // list events from the calendar
-const list = function (req, callback) {
+const list = function (calendarId, callback) {
   calendar.events.list({
     auth: auth.oauth2Client,
-    calendarId: store.get('CALENDAR_ID', req),
+    calendarId,
     timeMin: (new Date()).toISOString(),
     // maxResults: 20,
     singleEvents: true,
@@ -95,10 +95,10 @@ const list = function (req, callback) {
 }
 
 // helper function for removeEvents
-const remove = (eventId) => {
+const remove = (eventId, calendarId) => {
   calendar.events.delete({
     auth: auth.oauth2Client,
-    calendarId: store.get('CALENDAR_ID'),
+    calendarId,
     eventId
   }, (err) => {
     if (err) {
@@ -110,14 +110,14 @@ const remove = (eventId) => {
 }
 
 // remove events - all or by ID
-const removeEvents = function (spacedId) {
-  list(null, (eventsList) => {
+const removeEvents = function (calendarId, spacedId = null) {
+  list(calendarId, (eventsList) => {
     for (var id in eventsList) {
       eventsList[id].events.map((event) => {
-        if (spacedId !== undefined) {
-          if (id === spacedId) { remove(event.id) }
+        if (spacedId !== null) {
+          if (id === spacedId) { remove(event.id, calendarId) }
         } else {
-          remove(event.id)
+          remove(event.id, calendarId)
         }
       })
     }

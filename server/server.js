@@ -32,9 +32,21 @@ const init = () => {
   // list all events created with rem
   app.get('/list', function (req, res) {
     auth.authorize(res, req, () => {
-      events.list(req, (events) => {
+      events.list(store.get('CALENDAR_ID', req), (events) => {
         return res.send(events)
       })
+    })
+  })
+
+  // remove an event group
+  app.get('/remove', function (req, res) {
+    auth.authorize(res, req, () => {
+      if (req.query.id !== undefined) {
+        events.removeEvents(store.get('CALENDAR_ID', req), req.query.id)
+        return res.send(`will remove ${req.query.id}`)
+      } else {
+        return res.send('provide an id for event group to remove')
+      }
     })
   })
 
