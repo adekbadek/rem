@@ -1,6 +1,6 @@
 const storage = require('node-persist')
 const path = require('path')
-storage.initSync({dir: path.join(__dirname, '/../store')})
+storage.initSync({dir: path.join(__dirname, '/../server/store')})
 
 const get = (what, res = null) => {
   if (global.IS_CLI) {
