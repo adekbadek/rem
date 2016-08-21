@@ -2,14 +2,27 @@ const $ = require('jquery')
 
 require('./style')
 
+const removeEl = (el) => {
+  $.get(`/remove?id=${$(el).attr('data-toremove')}`, (data) => {
+    $(el).parent().remove()
+  })
+}
+
 $(document).ready(function () {
   const $list = $('#list')
 
   $.get('/list', (data) => {
     for (var group in data) {
-      group = data[group]
+      const groupItem = data[group]
       let reminderEl = document.createElement('div')
-      reminderEl.innerHTML = `${group.summary} (${group.events.length})`
+      let descrEl = document.createElement('span')
+      descrEl.innerHTML = `${groupItem.summary} (${groupItem.events.length})`
+      let buttonEl = document.createElement('button')
+      buttonEl.innerHTML = 'delete'
+      $(buttonEl).attr('data-toremove', group)
+      $(buttonEl).on('click', function () { removeEl(this) })
+      $(reminderEl).append(descrEl)
+      $(reminderEl).append(buttonEl)
       $list.append(reminderEl)
     }
   })
