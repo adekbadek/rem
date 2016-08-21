@@ -68,12 +68,21 @@ const list = function (req, callback) {
       console.log('No upcoming events found.')
       callback([])
     } else {
-      const eventList = []
+      console.log(`found ${response.items.length} events`)
+      const eventList = {}
       response.items.map((event) => {
         if (event.description !== undefined && event.description.indexOf(EVENT_NAME_PREFIX) === 0) {
-          eventList.push({
+          const spacedId = event.description.match(/^[\w]*_[0-9]*/)[0]
+
+          if (eventList[spacedId] === undefined) {
+            eventList[spacedId] = {
+              summary: event.summary,
+              events: []
+            }
+          }
+
+          eventList[spacedId].events.push({
             id: event.id,
-            spacedId: event.description.match(/^[\w]*_[0-9]*/)[0],
             summary: event.summary,
             description: event.description,
             start: event.start.dateTime || event.start.date
