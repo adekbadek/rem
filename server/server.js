@@ -12,7 +12,7 @@ const init = () => {
   app.use(cookieParser())
 
   // views for web app
-  app.set('views', './front')
+  app.set('views', './views')
   app.set('view engine', 'pug')
 
   // web app starting point
