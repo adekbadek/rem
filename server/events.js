@@ -1,5 +1,6 @@
 'use strict'
 
+const crypto = require('crypto')
 const google = require('googleapis')
 const calendar = google.calendar('v3')
 const moment = require('moment')
@@ -69,7 +70,7 @@ const list = function (calendarId, callback) {
       const eventList = {}
       response.items.map((event) => {
         if (event.description !== undefined && event.description.indexOf(EVENT_NAME_PREFIX) === 0) {
-          const spacedId = event.description.match(/^[\w]*_[0-9]*/)[0]
+          const spacedId = event.description.match(/^[\w]*_[\w]*/)[0]
 
           if (eventList[spacedId] === undefined) {
             eventList[spacedId] = {
@@ -166,12 +167,16 @@ const getDates = function (intervals, timeFrame, options) {
 
 // add multiple events to calendar
 const addMany = function (summary, options) {
-  let id = store.get('CURRENT_ID') || 0
   const intervals = options.shortIntervals ? [1, 3, 24, 48] : [1, 10, 30, 60]
+  const id = crypto.randomBytes(10).toString('hex')
   getDates(intervals, (options.shortIntervals ? 'hours' : 'days'), {allEventsAt5pm: !options.shortIntervals}).map((date, i) => {
-    add(createEvent(summary, `(${i + 1}/${intervals.length})${(options.description === undefined ? '' : ' / ' + options.description)}`, date, id))
+    add(createEvent(
+      summary,
+      `(${i + 1}/${intervals.length})${(options.description === undefined ? '' : ' / ' + options.description)}`,
+      date,
+      id
+    ))
   })
-  store.set('CURRENT_ID', id + 1)
 }
 
 module.exports = {
