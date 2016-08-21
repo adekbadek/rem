@@ -1,6 +1,5 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
-const path = require('path')
 
 const init = () => {
   // TODO: for some reason, events and auth return empty obj's when assigned out of init()
@@ -10,9 +9,13 @@ const init = () => {
   const app = express()
   app.use(cookieParser())
 
+  // views for web app
+  app.set('views', './front')
+  app.set('view engine', 'pug')
+
   // web app starting point
   app.get('/', function (req, res) {
-    return res.sendFile(path.join(__dirname, '/../front/index.html'))
+    return res.render('index', {message: 'Hello there!'})
   })
 
   // list all events created with rem

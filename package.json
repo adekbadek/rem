@@ -15,7 +15,8 @@
     "google-auth-library": "^0.9.8",
     "googleapis": "^10.0.0",
     "moment": "^2.14.1",
-    "node-persist": "0.0.12"
+    "node-persist": "0.0.12",
+    "pug": "^2.0.0-beta5"
   },
   "devDependencies": {
     "eslint": "^2.13.1",
