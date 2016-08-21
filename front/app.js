@@ -9,6 +9,8 @@ const removeEl = (el) => {
 }
 
 $(document).ready(function () {
+  document.body.style.opacity = 1
+
   const $list = $('#list')
 
   $.get('/list', (data) => {
