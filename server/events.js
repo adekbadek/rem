@@ -112,13 +112,15 @@ const remove = (eventId) => {
 // remove events - all or by ID
 const removeEvents = function (spacedId) {
   list(null, (eventsList) => {
-    eventsList.map((event) => {
-      if (spacedId !== undefined) {
-        if (event.spacedId === spacedId) { remove(event.id) }
-      } else {
-        remove(event.id)
-      }
-    })
+    for (var id in eventsList) {
+      eventsList[id].events.map((event) => {
+        if (spacedId !== undefined) {
+          if (id === spacedId) { remove(event.id) }
+        } else {
+          remove(event.id)
+        }
+      })
+    }
   })
 }
 
