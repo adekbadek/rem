@@ -61,9 +61,8 @@ const init = () => {
     })
   })
 
-  // clear cookie
+  // clear cookies
   app.get('/forget', function (req, res) {
-    console.log('remove cookies')
     for (var cookie in req.cookies) {
       res.clearCookie(cookie)
     }
@@ -75,7 +74,7 @@ const init = () => {
     auth.oauth2Client.getToken(res.req._parsedUrl.query.replace('code=', ''), function (err, tokens) {
       if (!err) {
         auth.oauth2Client.setCredentials(tokens)
-        auth.storeTokens(tokens, res)
+        store.set('CREDENTIALS', tokens, res)
 
         auth.getUserInfo(res)
 
@@ -87,7 +86,6 @@ const init = () => {
     })
   })
 
-  console.log('starting a server at localhost:3000')
   app.listen(3000)
 }
 

@@ -16,8 +16,7 @@ const getTheCalendar = (req, res, callback) => {
     auth: auth.oauth2Client
   }, function (err, calendars) {
     if (err) {
-      console.log('Calendar service err (getting calendars): ' + err)
-      return
+      return console.log('Calendar service err (getting calendars): ' + err)
     }
     // go through user's calendars to find the rem calendar
     let foundTheCalendar = false
@@ -40,8 +39,7 @@ const getTheCalendar = (req, res, callback) => {
         }
       }, function (err, calendars) {
         if (err) {
-          console.log('Calendar service err (adding calendar): ' + err)
-          return
+          return console.log('Calendar service err (adding calendar): ' + err)
         }
         if (callback !== null) { callback() }
         console.log('created a calendar with id', calendars.id)
@@ -56,7 +54,6 @@ const list = function (calendarId, callback) {
     auth: auth.oauth2Client,
     calendarId,
     timeMin: (new Date()).toISOString(),
-    // maxResults: 20,
     singleEvents: true,
     orderBy: 'startTime'
   }, function (err, response) {
@@ -102,8 +99,7 @@ const remove = (eventId, calendarId) => {
     eventId
   }, (err) => {
     if (err) {
-      console.log('Calendar service err (removing event): ' + err)
-      return
+      return console.log('Calendar service err (removing event): ' + err)
     }
     console.log('removed event', eventId)
   })

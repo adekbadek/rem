@@ -23,8 +23,7 @@ const AUTH_URL = oauth2Client.generateAuthUrl({
 
 const authorize = function (res, req, successCallback, errorCallback = null) {
   readTokens(
-    res,
-    req,
+    res, req,
     // if auth via tokens is possible, carry on
     () => {
       console.log('tokens read, authed')
@@ -66,16 +65,7 @@ const getUserInfo = (res) => {
   })
 }
 
-// read/write creds
-const storeTokens = (tokens, res = null) => {
-  if (global.IS_CLI && tokens !== undefined) {
-    console.log('storing tokens in store')
-    store.set('CREDENTIALS', tokens)
-  } else if (res) {
-    console.log('storing tokens in cookie')
-    store.set('CREDENTIALS', tokens, res)
-  }
-}
+// read creds
 const readTokens = (res, req, successCallback, errorCallback) => {
   const tokens = store.get('CREDENTIALS', req)
   if (tokens === undefined) {
@@ -92,7 +82,7 @@ const readTokens = (res, req, successCallback, errorCallback) => {
     }
 
     oauth2Client.setCredentials(tokens)
-    storeTokens(tokens, res)
+    store.set('CREDENTIALS', tokens, res)
 
     successCallback()
   })
@@ -101,6 +91,5 @@ const readTokens = (res, req, successCallback, errorCallback) => {
 module.exports = {
   oauth2Client,
   getUserInfo,
-  authorize,
-  storeTokens
+  authorize
 }
