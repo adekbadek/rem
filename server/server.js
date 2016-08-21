@@ -1,5 +1,6 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
+const path = require('path')
 
 const store = require('./store.js')
 
@@ -11,9 +12,10 @@ const init = () => {
   const app = express()
   app.use(cookieParser())
 
-  // views for web app
+  // views and assets for web app
   app.set('views', './views')
   app.set('view engine', 'pug')
+  app.use(express.static(path.join(__dirname, '../assets')))
 
   // web app starting point
   app.get('/', function (req, res) {
