@@ -1,6 +1,7 @@
 'use strict'
 
 const google = require('googleapis')
+const userinfo = google.oauth2('v2').userinfo
 const OAuth2 = google.auth.OAuth2
 const path = require('path')
 
@@ -17,17 +18,17 @@ google.options({ auth: oauth2Client }) // set auth as a global default
 //
 const AUTH_URL = oauth2Client.generateAuthUrl({
   access_type: 'offline', // 'online' (default) or 'offline' (gets refresh_token)
-  scope: 'https://www.googleapis.com/auth/calendar'
+  scope: ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/userinfo.profile']
 })
 
-const authorize = function (res, req, callback) {
+const authorize = function (res, req, successCallback, errorCallback = null) {
   readTokens(
     res,
     req,
     // if auth via tokens is possible, carry on
     () => {
       console.log('tokens read, authed')
-      return callback()
+      return successCallback()
     },
     // otherwise redirect to auth (web version) or start server (CLI version)
     () => {
@@ -41,11 +42,28 @@ const authorize = function (res, req, callback) {
           return
         }
       } else {
-        console.log('couldn\'t read tokens from cookie, proceeding to auth')
-        return res.redirect(AUTH_URL)
+        if (errorCallback) {
+          // used for index page
+          errorCallback()
+        } else {
+          console.log('couldn\'t read tokens from cookie, proceeding to auth')
+          return res.redirect(AUTH_URL)
+        }
       }
     }
   )
+}
+
+const getUserInfo = (res) => {
+  userinfo.get({
+    auth: oauth2Client,
+    fields: 'given_name,family_name'
+  }, function (err, info) {
+    if (err) {
+      return console.log('Google service err (getting userinfo): ' + err)
+    }
+    store.set('USER_INFO', info, res)
+  })
 }
 
 // read/write creds
@@ -82,6 +100,7 @@ const readTokens = (res, req, successCallback, errorCallback) => {
 
 module.exports = {
   oauth2Client,
+  getUserInfo,
   authorize,
   storeTokens
 }

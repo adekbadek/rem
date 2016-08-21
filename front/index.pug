@@ -18,9 +18,16 @@ html(lang="en")
       }
 
   body
-    h1= message
+    h1
+      if authorized
+        = 'Hello ' + userinfo.given_name
+      else
+        = 'authorize:'
+
 
     #biglinks
-      a(href='/auth') auth
-      a(href='/forget') forget
-      a(href='/list') list
+      if authorized
+        a(href='/forget') forget
+        a(href='/list') list
+      else
+        a(href='/auth') auth

@@ -1,6 +1,8 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
 
+const store = require('./store.js')
+
 const init = () => {
   // TODO: for some reason, events and auth return empty obj's when assigned out of init()
   const events = require('./events.js')
@@ -15,7 +17,14 @@ const init = () => {
 
   // web app starting point
   app.get('/', function (req, res) {
-    return res.render('index', {message: 'Hello there!'})
+    auth.authorize(res, req, () => {
+      return res.render('index', {
+        authorized: true,
+        userinfo: store.get('USER_INFO', req)
+      })
+    }, () => {
+      return res.render('index', {authorized: false})
+    })
   })
 
   // list all events created with rem
@@ -53,6 +62,8 @@ const init = () => {
       if (!err) {
         auth.oauth2Client.setCredentials(tokens)
         auth.storeTokens(tokens, res)
+
+        auth.getUserInfo(res)
 
         // get/create the calendar first
         events.getTheCalendar(req, res, () => {
