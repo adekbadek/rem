@@ -13,7 +13,7 @@ const init = () => {
   app.use(cookieParser())
 
   // views and assets for web app
-  app.set('views', './views')
+  app.set('views', './front/views')
   app.set('view engine', 'pug')
   app.use(express.static(path.join(__dirname, '../assets')))
 
