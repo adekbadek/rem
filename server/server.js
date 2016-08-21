@@ -41,9 +41,9 @@ const init = () => {
   // clear cookie
   app.get('/forget', function (req, res) {
     console.log('remove cookies')
-    res.clearCookie('CREDENTIALS')
-    res.clearCookie('CALENDAR_ID')
-    res.clearCookie('CURRENT_ID')
+    for (var cookie in req.cookies) {
+      res.clearCookie(cookie)
+    }
     return res.redirect('/')
   })
 
