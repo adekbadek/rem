@@ -9,8 +9,8 @@ if (args.length >= 1) {
 
   global.IS_CLI = true
 
-  require('./modules/cli.js').init(args[0], args.slice(1).join(' '))
+  require('./server/cli.js').init(args[0], args.slice(1).join(' '))
 } else {
   console.log('init as SERVER')
-  require('./modules/server.js').init()
+  require('./server/server.js').init()
 }
