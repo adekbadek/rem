@@ -1,5 +1,7 @@
 const $ = require('jquery')
 
+require('./style')
+
 $(document).ready(function () {
   const $list = $('#list')
 
