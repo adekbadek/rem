@@ -4,7 +4,7 @@ require('./style')
 
 const removeEvent = (el) => {
   $.post({
-    url: `/remove/${$(el).attr('data-toremove')}`,
+    url: `/api/remove/${$(el).attr('data-toremove')}`,
     success: (data) => {
       console.log(data)
       $(el).parent().remove()
@@ -14,7 +14,7 @@ const removeEvent = (el) => {
 
 const addEvent = (data) => {
   $.post({
-    url: '/add',
+    url: '/api/add',
     data: JSON.stringify({mode: data.mode, summary: data.summary}),
     contentType: 'application/json',
     success: (data) => {
@@ -29,7 +29,7 @@ $(document).ready(function () {
 
   const $list = $('#list')
 
-  $.get('/list', (data) => {
+  $.get('/api/list', (data) => {
     for (var group in data) {
       const groupItem = data[group]
       let reminderEl = document.createElement('div')

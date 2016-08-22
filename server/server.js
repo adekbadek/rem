@@ -19,6 +19,15 @@ const init = () => {
   app.set('view engine', 'pug')
   app.use(express.static(path.join(__dirname, '../assets')))
 
+  // all API calls need to be authorized
+  app.all('/api/*', (req, res, next) => {
+    auth.authorize(res, req, () => {
+      next()
+    }, () => {
+      return res.send('unauthorized')
+    })
+  })
+
   // web app starting point
   app.get('/', function (req, res) {
     auth.authorize(res, req, () => {
@@ -32,45 +41,33 @@ const init = () => {
   })
 
   // list all events
-  app.get('/list', function (req, res) {
-    auth.authorize(res, req, () => {
-      events.list(store.get('CALENDAR_ID', req), (events) => {
-        return res.send(events)
-      })
-    }, () => {
-      return res.send('unauthorized')
+  app.get('/api/list', function (req, res) {
+    events.list(store.get('CALENDAR_ID', req), (events) => {
+      return res.send(events)
     })
   })
 
   // add reminder
-  app.post('/add', function (req, res) {
-    auth.authorize(res, req, () => {
-      if (req.body.summary && req.body.mode) {
-        events.addMany(req.body.summary, {
-          shortIntervals: (req.body.mode === 'sh'),
-          calendarId: store.get('CALENDAR_ID', req)
-        })
-        return res.send(`will add ${req.body.summary} in mode ${req.body.mode}`)
-      } else {
-        return res.send('provide a mode and a summary for reminder to add')
-      }
-    }, () => {
-      return res.send('unauthorized')
-    })
+  app.post('/api/add', function (req, res) {
+    if (req.body.summary && req.body.mode) {
+      events.addMany(req.body.summary, {
+        shortIntervals: (req.body.mode === 'sh'),
+        calendarId: store.get('CALENDAR_ID', req)
+      })
+      return res.send(`will add ${req.body.summary} in mode ${req.body.mode}`)
+    } else {
+      return res.send('provide a mode and a summary for reminder to add')
+    }
   })
 
   // remove a reminder
-  app.post('/remove/:id', function (req, res) {
-    auth.authorize(res, req, () => {
-      if (req.params.id !== undefined) {
-        events.removeEvents(store.get('CALENDAR_ID', req), req.params.id)
-        return res.send(`will remove ${req.params.id}`)
-      } else {
-        return res.send('provide an id for reminder to remove')
-      }
-    }, () => {
-      return res.send('unauthorized')
-    })
+  app.post('/api/remove/:id', function (req, res) {
+    if (req.params.id !== undefined) {
+      events.removeEvents(store.get('CALENDAR_ID', req), req.params.id)
+      return res.send(`will remove ${req.params.id}`)
+    } else {
+      return res.send('provide an id for reminder to remove')
+    }
   })
 
   // url for authorizing app
