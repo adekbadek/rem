@@ -121,11 +121,14 @@ const removeEvents = function (calendarId, spacedId = null) {
   })
 }
 
+const createIdString = (id) => {
+  return `${EVENT_NAME_PREFIX}_${id}`
+}
 // helper function for add
 const createEvent = (summary, description, startDate, id) => {
   return {
     summary,
-    description: `${EVENT_NAME_PREFIX}_${id} ${description}`,
+    description: `${createIdString(id)} ${description}`,
     'start': {'dateTime': startDate.format()},
     'end': {'dateTime': moment(startDate).add(20, 'minutes').format()},
     'colorId': '10',
@@ -166,17 +169,23 @@ const getDates = function (intervals, timeFrame, options) {
 }
 
 // add multiple events to calendar
-const addMany = function (summary, options) {
+const addMany = function (summary, options, callback) {
   const intervals = options.shortIntervals ? [1, 3, 24, 48] : [1, 10, 30, 60]
   const id = crypto.randomBytes(10).toString('hex')
+  let events = []
   getDates(intervals, (options.shortIntervals ? 'hours' : 'days'), {allEventsAt5pm: !options.shortIntervals}).map((date, i) => {
-    add(createEvent(
+    const event = createEvent(
       summary,
       `(${i + 1}/${intervals.length})${(options.description === undefined ? '' : ' / ' + options.description)}`,
       date,
       id
-    ), options.calendarId)
+    )
+    events.push(event)
+    add(event, options.calendarId)
   })
+  if (callback) {
+    callback({id: createIdString(id), eventObject: {summary, events}})
+  }
 }
 
 module.exports = {

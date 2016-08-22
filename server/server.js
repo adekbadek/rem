@@ -70,9 +70,11 @@ const init = () => {
       events.addMany(req.body.summary, {
         shortIntervals: (req.body.mode === 'sh'),
         calendarId: store.get('CALENDAR_ID', req)
+      }, (newEvent) => {
+        return res.send(newEvent)
       })
-      return res.send(`will add ${req.body.summary} in mode ${req.body.mode}`)
     } else {
+      res.status(400)
       return res.send('provide a mode and a summary for reminder to add')
     }
   })
@@ -83,6 +85,7 @@ const init = () => {
       events.removeEvents(store.get('CALENDAR_ID', req), req.params.id)
       return res.send(`will remove ${req.params.id}`)
     } else {
+      res.status(400)
       return res.send('provide an id for reminder to remove')
     }
   })

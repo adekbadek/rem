@@ -36,12 +36,11 @@ class Form extends React.Component {
         summary: this.refs.summary.value
       }},
       (resp) => {
-        // TODO: update state
-        console.log(resp)
-        this.props.onAddItem(resp)
+        this.props.onAddItem(JSON.parse(resp))
       },
       (err) => { console.log(err) }
     )
+    this.refs.summary.value = ''
   }
   render () {
     return <form id="add-form" onSubmit={this.onSubmit}>
@@ -109,8 +108,11 @@ export class App extends React.Component {
       list: this.state.list
     })
   }
-  onAddItem (reminder) {
-    console.log('added', reminder)
+  onAddItem (newEvent) {
+    this.state.list[newEvent.id] = newEvent.eventObject
+    this.setState({
+      list: this.state.list
+    })
   }
   createListElems () {
     let listElems = []
