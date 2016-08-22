@@ -2,9 +2,21 @@ const $ = require('jquery')
 
 require('./style')
 
-const removeEl = (el) => {
+const removeEvent = (el) => {
   $.get(`/remove?id=${$(el).attr('data-toremove')}`, (data) => {
     $(el).parent().remove()
+  })
+}
+
+const addEvent = (data) => {
+  $.post({
+    url: '/add',
+    data: JSON.stringify({mode: data.mode, summary: data.summary}),
+    contentType: 'application/json',
+    success: (data) => {
+      console.log(data)
+      // TODO: update list
+    }
   })
 }
 
@@ -22,10 +34,16 @@ $(document).ready(function () {
       let buttonEl = document.createElement('button')
       buttonEl.innerHTML = 'delete'
       $(buttonEl).attr('data-toremove', group)
-      $(buttonEl).on('click', function () { removeEl(this) })
+      $(buttonEl).on('click', function () { removeEvent(this) })
       $(reminderEl).append(descrEl)
       $(reminderEl).append(buttonEl)
       $list.append(reminderEl)
     }
+  })
+
+  $('#add-form').on('submit', function (ev) {
+    ev.preventDefault()
+    const formData = $(this).serializeArray().reduce(function (a, x) { a[x.name] = x.value; return a }, {})
+    addEvent(formData)
   })
 })

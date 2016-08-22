@@ -1,5 +1,6 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
 const path = require('path')
 
 const store = require('./store.js')
@@ -10,6 +11,7 @@ const init = () => {
   const auth = require('./auth.js')
 
   const app = express()
+  app.use(bodyParser.json())
   app.use(cookieParser())
 
   // views and assets for web app
@@ -29,24 +31,46 @@ const init = () => {
     })
   })
 
-  // list all events created with rem
+  // list all events
   app.get('/list', function (req, res) {
     auth.authorize(res, req, () => {
       events.list(store.get('CALENDAR_ID', req), (events) => {
         return res.send(events)
       })
+    }, () => {
+      return res.send('unauthorized')
     })
   })
 
-  // remove an event group
+  // add reminder
+  app.post('/add', function (req, res) {
+    auth.authorize(res, req, () => {
+      if (req.body.summary && req.body.mode) {
+        events.addMany(req.body.summary, {
+          shortIntervals: (req.body.mode === 'sh'),
+          calendarId: store.get('CALENDAR_ID', req)
+        })
+        return res.send(`will add ${req.body.summary} in mode ${req.body.mode}`)
+      } else {
+        return res.send('provide a mode and a summary for reminder to add')
+      }
+    }, () => {
+      return res.send('unauthorized')
+    })
+  })
+
+  // remove an reminder
+  // TODO: change to post req (/remove/:id)
   app.get('/remove', function (req, res) {
     auth.authorize(res, req, () => {
       if (req.query.id !== undefined) {
         events.removeEvents(store.get('CALENDAR_ID', req), req.query.id)
         return res.send(`will remove ${req.query.id}`)
       } else {
-        return res.send('provide an id for event group to remove')
+        return res.send('provide an id for reminder to remove')
       }
+    }, () => {
+      return res.send('unauthorized')
     })
   })
 

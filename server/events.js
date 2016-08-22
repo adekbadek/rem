@@ -139,10 +139,10 @@ const createEvent = (summary, description, startDate, id) => {
 }
 
 // add an event to calendar
-const add = function (event) {
+const add = function (event, calendarId) {
   calendar.events.insert({
     auth: auth.oauth2Client,
-    calendarId: store.get('CALENDAR_ID'),
+    calendarId,
     resource: event
   }, function (err, event) {
     if (err) {
@@ -175,7 +175,7 @@ const addMany = function (summary, options) {
       `(${i + 1}/${intervals.length})${(options.description === undefined ? '' : ' / ' + options.description)}`,
       date,
       id
-    ))
+    ), options.calendarId)
   })
 }
 
