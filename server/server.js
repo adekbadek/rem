@@ -3,6 +3,10 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const path = require('path')
 
+var webpack = require('webpack')
+var config = require('./../webpack.config.dev')
+var compiler = webpack(config)
+
 const store = require('./store.js')
 
 const init = () => {
@@ -13,6 +17,15 @@ const init = () => {
   const app = express()
   app.use(bodyParser.json())
   app.use(cookieParser())
+
+  if (app.settings.env === 'development') {
+    // React HotModuleReplacementPlugin
+    app.use(require('webpack-dev-middleware')(compiler, {
+      noInfo: true,
+      publicPath: config.output.publicPath
+    }))
+    app.use(require('webpack-hot-middleware')(compiler))
+  }
 
   // views and assets for web app
   app.set('views', './front/views')
@@ -33,10 +46,14 @@ const init = () => {
     auth.authorize(res, req, () => {
       return res.render('index', {
         authorized: true,
+        env: app.settings.env,
         userinfo: store.get('USER_INFO', req)
       })
     }, () => {
-      return res.render('index', {authorized: false})
+      return res.render('index', {
+        authorized: false,
+        env: app.settings.env
+      })
     })
   })
 

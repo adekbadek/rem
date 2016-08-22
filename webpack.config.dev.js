@@ -1,18 +1,24 @@
 var ProgressBarPlugin = require('progress-bar-webpack-plugin')
 var autoprefixer = require('autoprefixer')
+var webpack = require('webpack')
+
+var path = require('path')
 
 module.exports = {
-  entry: {
-    app: './front/app.js'
-  },
+  devtool: 'cheap-module-eval-source-map',
+  entry: [
+    'webpack-hot-middleware/client',
+    './front/app.js'
+  ],
   output: {
-    path: './assets/_js',
-    filename: '[name].js' // Template based on keys in entry above
+    path: path.join(__dirname, 'assets/js'),
+    filename: 'app.js',
+    publicPath: '/devserver/'
   },
   module: {
     loaders: [
       {
-        test: /\.js$/,
+        test: /\.jsx?$/,
         loader: 'babel-loader',
         query: {
           presets: ['es2015']
@@ -29,9 +35,11 @@ module.exports = {
   },
   resolve: {
     // you can now require('file') instead of require('file.coffee')
-    extensions: ['', '.js', '.json', '.sass']
+    extensions: ['', '.js', '.jsx', '.json', '.sass']
   },
   plugins: [
-    new ProgressBarPlugin({width: 200, clear: false})
+    new ProgressBarPlugin({width: 20, clear: false}),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin()
   ]
 }

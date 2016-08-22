@@ -1,6 +1,7 @@
 const $ = require('jquery')
 
 require('./style')
+require('./test-component')
 
 const removeEvent = (el) => {
   $.post({

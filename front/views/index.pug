@@ -18,12 +18,13 @@ html(lang="en")
       else
         = 'authorize:'
 
-
     #biglinks
       if authorized
         a.btn(href='/logout') logout
       else
         a.btn(href='/auth') auth
+
+    #root
 
     if authorized
 
@@ -38,6 +39,6 @@ html(lang="en")
         input.btn#f-submit(type='submit')
 
       #list
-        // TODO return initial list here, and only update on front
+        //- TODO return initial list here, and only update on front?
 
-      script(src="/_js/app.js" type="text/javascript")
+      script(src=`${env === 'development' ? 'devserver' : 'js'}/app.js` type="text/javascript")
