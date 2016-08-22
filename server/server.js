@@ -82,7 +82,7 @@ const init = () => {
   })
 
   // clear cookies
-  app.get('/forget', function (req, res) {
+  app.get('/logout', function (req, res) {
     for (var cookie in req.cookies) {
       res.clearCookie(cookie)
     }
