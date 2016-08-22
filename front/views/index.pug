@@ -24,21 +24,11 @@ html(lang="en")
       else
         a.btn(href='/auth') auth
 
-    #root
 
     if authorized
 
       h3 Add a reminder
-      form#add-form
-        label(for='f-mode') mode
-        input#f-mode(type='text', name='mode')
-        br
-        label(for='f-summary') summary
-        input#f-summary(type='text', name='summary')
-        br
-        input.btn#f-submit(type='submit')
 
-      #list
-        //- TODO return initial list here, and only update on front?
+      #root
 
       script(src=`${env === 'development' ? 'devserver' : 'js'}/app.js` type="text/javascript")
