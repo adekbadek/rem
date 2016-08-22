@@ -1,4 +1,5 @@
 var ProgressBarPlugin = require('progress-bar-webpack-plugin')
+var autoprefixer = require('autoprefixer')
 
 module.exports = {
   entry: {
@@ -19,9 +20,12 @@ module.exports = {
       },
       {
         test: /\.sass$/,
-        loaders: ['style', 'css', 'sass']
+        loaders: ['style', 'css', 'postcss-loader', 'sass']
       }
     ]
+  },
+  postcss: function () {
+    return [autoprefixer]
   },
   resolve: {
     // you can now require('file') instead of require('file.coffee')
