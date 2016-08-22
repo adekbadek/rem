@@ -36,6 +36,7 @@ $(document).ready(function () {
       let descrEl = document.createElement('span')
       descrEl.innerHTML = `${groupItem.summary} (${groupItem.events.length})`
       let buttonEl = document.createElement('button')
+      buttonEl.classList.add('btn-small')
       buttonEl.innerHTML = 'delete'
       $(buttonEl).attr('data-toremove', group)
       $(buttonEl).on('click', function () { removeEvent(this) })

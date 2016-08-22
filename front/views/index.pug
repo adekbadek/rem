@@ -21,9 +21,9 @@ html(lang="en")
 
     #biglinks
       if authorized
-        a(href='/logout') logout
+        a.btn(href='/logout') logout
       else
-        a(href='/auth') auth
+        a.btn(href='/auth') auth
 
     if authorized
 
@@ -35,7 +35,7 @@ html(lang="en")
         label(for='f-summary') summary
         input#f-summary(type='text', name='summary')
         br
-        input#f-submit(type='submit')
+        input.btn#f-submit(type='submit')
 
       #list
         // TODO return initial list here, and only update on front
