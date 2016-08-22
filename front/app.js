@@ -3,8 +3,12 @@ const $ = require('jquery')
 require('./style')
 
 const removeEvent = (el) => {
-  $.get(`/remove?id=${$(el).attr('data-toremove')}`, (data) => {
-    $(el).parent().remove()
+  $.post({
+    url: `/remove/${$(el).attr('data-toremove')}`,
+    success: (data) => {
+      console.log(data)
+      $(el).parent().remove()
+    }
   })
 }
 

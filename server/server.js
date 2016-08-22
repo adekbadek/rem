@@ -59,13 +59,12 @@ const init = () => {
     })
   })
 
-  // remove an reminder
-  // TODO: change to post req (/remove/:id)
-  app.get('/remove', function (req, res) {
+  // remove a reminder
+  app.post('/remove/:id', function (req, res) {
     auth.authorize(res, req, () => {
-      if (req.query.id !== undefined) {
-        events.removeEvents(store.get('CALENDAR_ID', req), req.query.id)
-        return res.send(`will remove ${req.query.id}`)
+      if (req.params.id !== undefined) {
+        events.removeEvents(store.get('CALENDAR_ID', req), req.params.id)
+        return res.send(`will remove ${req.params.id}`)
       } else {
         return res.send('provide an id for reminder to remove')
       }
