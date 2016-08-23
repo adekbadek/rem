@@ -17,6 +17,7 @@ const init = () => {
   const app = express()
   app.use(bodyParser.json())
   app.use(cookieParser())
+  app.set('port', (process.env.PORT || 3000))
 
   if (app.settings.env === 'development') {
     // React HotModuleReplacementPlugin
@@ -126,7 +127,9 @@ const init = () => {
     })
   })
 
-  app.listen(3000)
+  app.listen(app.get('port'), function () {
+    console.log('Node app is running on port', app.get('port'))
+  })
 }
 
 module.exports = {
