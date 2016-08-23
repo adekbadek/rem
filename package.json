@@ -6,7 +6,7 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
     "serve": "cross-env NODE_ENV=production node index.js",
-    "postinstall": "npm run build",
+    "heroku-postinstall": "npm run build",
     "start": "npm run build & npm run serve",
     "dev": "cross-env NODE_ENV=development node index.js"
   },
@@ -51,6 +51,7 @@
     "eslint-config-standard": "^5.3.5",
     "eslint-config-standard-react": "^3.0.0",
     "eslint-plugin-promise": "^2.0.1",
+    "eslint-plugin-react": "^6.1.2",
     "eslint-plugin-standard": "^2.0.0"
   }
 }
