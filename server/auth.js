@@ -73,19 +73,19 @@ const readTokens = (res, req, successCallback, errorCallback) => {
   if (tokens === undefined) {
     return errorCallback()
   }
-  console.log('read tokens successfully')
 
   oauth2Client.setCredentials(tokens)
 
   oauth2Client.refreshAccessToken(function (err, tokens) {
     if (err) {
       errorCallback()
-      return err
+      return console.log('Error in refreshAccessToken', err)
     }
 
     oauth2Client.setCredentials(tokens)
     store.set('CREDENTIALS', tokens, res)
 
+    console.log('success in authorize')
     successCallback()
   })
 }
