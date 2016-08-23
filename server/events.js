@@ -142,7 +142,7 @@ const createEvent = (summary, description, startDate, id) => {
 }
 
 // add an event to calendar
-const add = function (event, calendarId) {
+const addEventToCalendar = function (event, calendarId) {
   calendar.events.insert({
     auth: auth.oauth2Client,
     calendarId,
@@ -180,8 +180,9 @@ const addMany = function (summary, options, callback) {
       date,
       id
     )
+    addEventToCalendar(event, options.calendarId)
+    event.start = event.start.dateTime
     events.push(event)
-    add(event, options.calendarId)
   })
   if (callback) {
     callback({id: createIdString(id), eventObject: {summary, events}})
