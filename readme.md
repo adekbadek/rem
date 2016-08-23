@@ -36,3 +36,7 @@
 
   - event groups can be deleted via ID - `events.removeEvents(<CALENDAR_ID>, <ID>)`
   - `events.removeEvents(<CALENDAR_ID>)` will remove all upcoming events created with this app
+
+## quirks
+
+  because of how [Google OAuth works](http://stackoverflow.com/a/10857806/3772847) you can only authorize app for either CLI use or web-app use :(
