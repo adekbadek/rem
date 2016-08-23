@@ -19,7 +19,7 @@ const init = () => {
   app.use(cookieParser())
   app.set('port', (process.env.PORT || 3000))
 
-  if (app.settings.env === 'development') {
+  if (app.settings.env === 'development' && !global.IS_CLI) {
     // React HotModuleReplacementPlugin
     app.use(require('webpack-dev-middleware')(compiler, {
       noInfo: true,

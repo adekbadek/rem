@@ -75,17 +75,16 @@ const readTokens = (res, req, successCallback, errorCallback) => {
   }
 
   oauth2Client.setCredentials(tokens)
-  console.log('TOKENS BEFORE REFRESHACCESSTOKEN:', tokens.refresh_token)
   store.set('CREDENTIALS', tokens, res)
 
   oauth2Client.refreshAccessToken(function (err, tokens) {
     if (err) {
       errorCallback()
-      return console.log('Error in refreshAccessToken', err)
+      // console.log('Error in refreshAccessToken', err)
+      return
     }
 
     oauth2Client.setCredentials(tokens)
-    console.log('TOKENS BEFORE REFRESHACCESSTOKEN:', tokens.refresh_token)
     store.set('CREDENTIALS', tokens, res)
 
     successCallback()
@@ -93,13 +92,11 @@ const readTokens = (res, req, successCallback, errorCallback) => {
 }
 
 const revoke = () => {
-  console.log(oauth2Client)
   oauth2Client.revokeCredentials(function (err, result) {
     if (err) {
       // console.log('Error in revokeCredentials', err)
       return
     }
-    console.log('revoke:', result)
   })
 }
 

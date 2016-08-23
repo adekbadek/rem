@@ -10,6 +10,9 @@ const init = (mode, summary) => {
       if (mode === 'remove') {
         console.log('removing all events...')
         events.removeEvents(store.get('CALENDAR_ID'))
+      } else if (mode === 'revoke') {
+        console.log('revoking access')
+        auth.revoke()
       } else if (mode.length > 0 && summary.length > 0) {
         events.addMany(summary, {
           shortIntervals: (mode === 'sh'),
