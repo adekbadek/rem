@@ -12,9 +12,9 @@
 
 ## Web
 
-### REST
+### REST API
 
-  - `/list` returns all events created with rem
+  look in `server/server.js`
 
 ## CLI
 
@@ -22,11 +22,17 @@
     - `sh` creates four events - 1, 3, 24, 48 hours from now
     - `lg` creates four events - 1, 10, 30, 60 days from now (each day at 17:00)
 
-  - `$ node index.js remove` - removes all events
+  - `$ node index.js remove` - removes all upcoming events
 
 ## code
 
+### authentication
+
+  using OAuth2 Google library
+
+  creds are stored in locally in files (node-persist library) or in cookies
+
 ### events.js
 
-  - event groups can be deleted via ID - `events.removeEvents(<ID>)`
-  - `events.removeEvents()` will remove all events created with this app
+  - event groups can be deleted via ID - `events.removeEvents(<CALENDAR_ID>, <ID>)`
+  - `events.removeEvents(<CALENDAR_ID>)` will remove all upcoming events created with this app
