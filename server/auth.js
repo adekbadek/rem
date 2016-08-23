@@ -75,6 +75,7 @@ const readTokens = (res, req, successCallback, errorCallback) => {
   }
 
   oauth2Client.setCredentials(tokens)
+  console.log('TOKENS BEFORE REFRESHACCESSTOKEN:', tokens)
   store.set('CREDENTIALS', tokens, res)
 
   oauth2Client.refreshAccessToken(function (err, tokens) {
@@ -84,6 +85,7 @@ const readTokens = (res, req, successCallback, errorCallback) => {
     }
 
     oauth2Client.setCredentials(tokens)
+    console.log('TOKENS BEFORE REFRESHACCESSTOKEN:', tokens)
     store.set('CREDENTIALS', tokens, res)
 
     successCallback()
