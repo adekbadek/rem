@@ -9,11 +9,16 @@ export default class Form extends React.Component {
   }
   onSubmit (e) {
     e.preventDefault()
+    let mode = null
+    const radios = document.querySelectorAll('form input[type="radio"]')
+    Array.prototype.forEach.call(radios, function (el, i) {
+      if (el.checked) { mode = el.value }
+    })
     utils.ajax({
       method: 'POST',
       url: '/api/add',
       data: {
-        mode: this.refs.mode.value,
+        mode,
         summary: this.refs.summary.value
       }},
       (resp) => {
@@ -26,12 +31,17 @@ export default class Form extends React.Component {
   render () {
     return <form id="add-form" onSubmit={this.onSubmit}>
       <label htmlFor="f-mode">mode</label>
-      <input type="text" id="f-mode" ref="mode" />
+      <span className="radio">
+        <input type="radio" name="mode" id="f-mode" value="sh" checked /><span>short</span>
+      </span>
+      <span className="radio">
+        <input type="radio" name="mode" id="f-mode" value="lg" /><span>long</span>
+      </span>
       <br />
       <label htmlFor="f-summary">summary</label>
       <input type="text" id="f-summary" ref="summary" />
       <br />
-      <input type="submit" id="f-submit" className="btn" />
+      <input type="submit" id="f-submit" className="btn" value="add" />
     </form>
   }
 }
