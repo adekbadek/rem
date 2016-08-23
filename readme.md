@@ -23,6 +23,7 @@
     - `lg` creates four events - 1, 10, 30, 60 days from now (each day at 17:00)
 
   - `$ node index.js remove` - removes all upcoming events
+  - `$ node index.js revoke` - revoke access (logout)
 
 ## code
 
@@ -39,4 +40,6 @@
 
 ## quirks
 
-  because of how [Google OAuth works](http://stackoverflow.com/a/10857806/3772847) you can only authorize app for either CLI use or web-app use :(
+  because of how [Google OAuth works](http://stackoverflow.com/a/10857806/3772847) you can only be 'logged in' on CLI or web app version simultaneously :(
+
+  ([remove access here](https://security.google.com/settings/security/permissions) if it auth trouble)
