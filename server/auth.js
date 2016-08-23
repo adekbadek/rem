@@ -75,7 +75,7 @@ const readTokens = (res, req, successCallback, errorCallback) => {
   }
 
   oauth2Client.setCredentials(tokens)
-  console.log('TOKENS BEFORE REFRESHACCESSTOKEN:', tokens)
+  console.log('TOKENS BEFORE REFRESHACCESSTOKEN:', tokens.refresh_token)
   store.set('CREDENTIALS', tokens, res)
 
   oauth2Client.refreshAccessToken(function (err, tokens) {
@@ -85,15 +85,21 @@ const readTokens = (res, req, successCallback, errorCallback) => {
     }
 
     oauth2Client.setCredentials(tokens)
-    console.log('TOKENS BEFORE REFRESHACCESSTOKEN:', tokens)
+    console.log('TOKENS BEFORE REFRESHACCESSTOKEN:', tokens.refresh_token)
     store.set('CREDENTIALS', tokens, res)
 
     successCallback()
   })
 }
 
+const revoke = () => {
+  console.log('revoking access')
+  oauth2Client.revokeToken()
+}
+
 module.exports = {
   oauth2Client,
   getUserInfo,
-  authorize
+  authorize,
+  revoke
 }
