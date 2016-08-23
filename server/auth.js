@@ -92,14 +92,8 @@ const readTokens = (res, req, successCallback, errorCallback) => {
   })
 }
 
-const revoke = () => {
-  console.log('revoking access')
-  oauth2Client.revokeToken()
-}
-
 module.exports = {
   oauth2Client,
   getUserInfo,
-  authorize,
-  revoke
+  authorize
 }
