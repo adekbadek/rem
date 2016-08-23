@@ -32,7 +32,7 @@ export default class Form extends React.Component {
     return <form id="add-form" onSubmit={this.onSubmit}>
       <label htmlFor="f-mode">mode</label>
       <span className="radio">
-        <input type="radio" name="mode" id="f-mode" value="sh" checked /><span>short</span>
+        <input type="radio" name="mode" id="f-mode" value="sh" defaultChecked /><span>short</span>
       </span>
       <span className="radio">
         <input type="radio" name="mode" id="f-mode" value="lg" /><span>long</span>
