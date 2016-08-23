@@ -92,8 +92,20 @@ const readTokens = (res, req, successCallback, errorCallback) => {
   })
 }
 
+const revoke = () => {
+  console.log(oauth2Client)
+  oauth2Client.revokeCredentials(function (err, result) {
+    if (err) {
+      // console.log('Error in revokeCredentials', err)
+      return
+    }
+    console.log('revoke:', result)
+  })
+}
+
 module.exports = {
   oauth2Client,
   getUserInfo,
-  authorize
+  authorize,
+  revoke
 }
