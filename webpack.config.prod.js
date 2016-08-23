@@ -1,5 +1,4 @@
 var webpack = require('webpack')
-var ProgressBarPlugin = require('progress-bar-webpack-plugin')
 
 var devConfig = require('./webpack.config.dev.js')
 
@@ -24,8 +23,7 @@ module.exports = {
       compressor: {
         warnings: false
       }
-    }),
-    new ProgressBarPlugin({width: 20, clear: false})
+    })
   ],
   postcss: devConfig.postcss,
   resolve: devConfig.resolve,

@@ -8,9 +8,11 @@ const path = require('path')
 const store = require('./store.js')
 
 // load env variables
-const dotenv = require('dotenv')
-dotenv.config({path: path.join(__dirname, '/../.env')})
-dotenv.load()
+if (process.env.HEROKU === undefined || process.env.HEROKU !== 'yes') {
+  const dotenv = require('dotenv')
+  dotenv.config({path: path.join(__dirname, '/../.env')})
+  dotenv.load()
+}
 
 // set up OAuth
 const oauth2Client = new OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URL)
