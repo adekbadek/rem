@@ -75,6 +75,7 @@ const readTokens = (res, req, successCallback, errorCallback) => {
   }
 
   oauth2Client.setCredentials(tokens)
+  console.log('set tokens', tokens)
 
   oauth2Client.refreshAccessToken(function (err, tokens) {
     if (err) {
