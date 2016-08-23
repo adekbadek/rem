@@ -15,14 +15,12 @@ html(lang="en")
     h1
       if authorized
         = 'Hello ' + userinfo.given_name
-      else
-        = 'authorize:'
 
     #biglinks
       if authorized
         a.btn(href='/logout') logout
       else
-        a.btn(href='/auth') auth
+        a.btn(href='/auth') authorize!
 
 
     if authorized
@@ -32,3 +30,20 @@ html(lang="en")
       #root
 
       script(src=`${env === 'development' ? 'devserver' : 'js'}/app.js` type="text/javascript")
+
+    else
+      style.
+        body{
+          font-family: sans-serif;
+        }
+        #biglinks{
+          text-align: center;
+          margin-top: 10vh;
+        }
+        a{
+          background: #00ff30;
+          color: black;
+          padding: 10px 20px;
+          text-decoration: none;
+          font-size: 30px;
+        }
