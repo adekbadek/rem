@@ -3,9 +3,9 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const path = require('path')
 
-var webpack = require('webpack')
-var config = require('./../webpack.config.dev')
-var compiler = webpack(config)
+const webpack = require('webpack')
+const config = require('./../webpack.config.dev')
+const compiler = webpack(config)
 
 const store = require('./store.js')
 
