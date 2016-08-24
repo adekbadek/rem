@@ -2,6 +2,7 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const path = require('path')
+const xssFilters = require('xss-filters')
 
 const webpack = require('webpack')
 const config = require('./../webpack.config.dev')
@@ -68,7 +69,7 @@ const init = () => {
   // add reminder
   app.post('/api/add', function (req, res) {
     if (req.body.summary && req.body.mode) {
-      events.addMany(req.body.summary, {
+      events.addMany(xssFilters.inHTMLData(req.body.summary), {
         shortIntervals: (req.body.mode === 'sh'),
         calendarId: store.get('CALENDAR_ID', req)
       }, (newEvent) => {
@@ -83,7 +84,7 @@ const init = () => {
   // remove a reminder
   app.post('/api/remove/:id', function (req, res) {
     if (req.params.id !== undefined) {
-      events.removeEvents(store.get('CALENDAR_ID', req), req.params.id)
+      events.removeEvents(store.get('CALENDAR_ID', req), xssFilters.inHTMLData(req.params.id))
       return res.send(`will remove ${req.params.id}`)
     } else {
       res.status(400)
