@@ -50,10 +50,10 @@ const getTheCalendar = (req, res, callback) => {
 }
 
 // list events from the calendar
-const list = function (calendarId, callback) {
+const listAllEvents = function (options, callback) {
   calendar.events.list({
     auth: auth.oauth2Client,
-    calendarId,
+    calendarId: options.calendarId,
     timeMin: (new Date()).toISOString(),
     singleEvents: true,
     orderBy: 'startTime'
@@ -79,12 +79,16 @@ const list = function (calendarId, callback) {
             }
           }
 
-          eventList[spacedId].events.push({
-            id: event.id,
-            summary: event.summary,
-            description: event.description,
-            start: event.start.dateTime || event.start.date
-          })
+          if (options.fullEventObjects) {
+            eventList[spacedId].events.push(event)
+          } else {
+            eventList[spacedId].events.push({
+              id: event.id,
+              summary: event.summary,
+              description: event.description,
+              start: event.start.dateTime || event.start.date
+            })
+          }
         }
       })
       callback(eventList)
@@ -106,18 +110,46 @@ const remove = (eventId, calendarId) => {
   })
 }
 
-// remove events - all or by ID
-const removeEvents = function (calendarId, spacedId = null) {
-  list(calendarId, (eventsList) => {
+// helper for removing and updating
+const listBySpacedId = (options, spacedId = null, callback) => {
+  listAllEvents(options, (eventsList) => {
     for (var id in eventsList) {
-      eventsList[id].events.map((event) => {
-        if (spacedId !== null) {
-          if (id === spacedId) { remove(event.id, calendarId) }
-        } else {
-          remove(event.id, calendarId)
-        }
-      })
+      eventsList[id].events.map((event) => (callback(event, id)))
     }
+  })
+}
+
+// remove events - all or by ID
+const removeEvents = (calendarId, spacedId = null) => {
+  listBySpacedId({calendarId}, spacedId, (event, id) => {
+    if (spacedId !== null) {
+      if (id === spacedId) { remove(event.id, calendarId) }
+    } else {
+      remove(event.id, calendarId)
+    }
+  })
+}
+
+// helper function for updateEvents
+const update = (eventId, calendarId, event, eventSummary) => {
+  event.summary = eventSummary
+  calendar.events.update({
+    auth: auth.oauth2Client,
+    calendarId,
+    eventId,
+    resource: event
+  }, (err) => {
+    if (err) {
+      return console.log('Calendar service err (updating event): ' + err)
+    }
+    console.log('updated event', eventId)
+  })
+}
+
+// update events
+const updateEvents = (calendarId, spacedId, eventSummary) => {
+  listBySpacedId({calendarId, fullEventObjects: true}, spacedId, (event, id) => {
+    if (id === spacedId) { update(event.id, calendarId, event, eventSummary) }
   })
 }
 
@@ -190,8 +222,9 @@ const addMany = function (summary, options, callback) {
 }
 
 module.exports = {
-  list,
+  listAllEvents,
   addMany,
   removeEvents,
+  updateEvents,
   getTheCalendar
 }

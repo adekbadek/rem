@@ -61,7 +61,7 @@ const init = () => {
 
   // list all events
   app.get('/api/list', function (req, res) {
-    events.list(store.get('CALENDAR_ID', req), (events) => {
+    events.listAllEvents({calendarId: store.get('CALENDAR_ID', req)}, (events) => {
       return res.send(events)
     })
   })
@@ -89,6 +89,21 @@ const init = () => {
     } else {
       res.status(400)
       return res.send('provide an id for reminder to remove')
+    }
+  })
+
+  // update a reminder
+  app.post('/api/update/:id', function (req, res) {
+    if (req.params.id !== undefined && req.body.eventSummary) {
+
+      console.log(req.params.id, req.body.eventSummary)
+      events.updateEvents(store.get('CALENDAR_ID', req), xssFilters.inHTMLData(req.params.id), xssFilters.inHTMLData(req.body.eventSummary))
+
+      return res.send(`will update ${req.params.id}`)
+    } else {
+      // test that chaining
+      res.status(400)
+      return res.send('provide an id and eventSummary for reminder to update')
     }
   })
 
