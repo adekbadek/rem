@@ -1,14 +1,12 @@
 # rem
 
   - two ways to use it:
-    1. web - *in progress*
+    1. web - [rem-rc.herokuapp.com](https://rem-rc.herokuapp.com/)
       - web app
       - REST API
     2. CLI (see below)
 
-  - in gcal, description of every event contains
-    - the ID of this events group
-    - the position of the reminder in group (e.g. `(2/4)`)
+  - in gcal, description of every event contains: the ID of this events group, the position of the reminder in group (e.g. `(2/4)`)
 
 ## Web
 
