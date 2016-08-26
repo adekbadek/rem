@@ -4,6 +4,11 @@ $black: #222
 $pink: #ff9a9a
 $green: #00ff30
 
+::selection
+  background: rgba($green, .25)
+::-moz-selection
+  background: rgba($green, .25)
+
 body
   padding: 0 20px
 
@@ -52,16 +57,12 @@ a
     position: absolute
     top: 3px
     right: 5px
-    opacity: 0
     transition: opacity 200ms
 
   > div
     position: relative
     border-bottom: 1px solid
     padding: 3px 5px
-    &:hover
-      .btn-delete
-        opacity: 1
 
   input[type="text"]
     width: 100%
