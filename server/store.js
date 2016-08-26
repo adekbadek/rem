@@ -14,7 +14,7 @@ const set = (key, value, res = null) => {
   if (global.IS_CLI) {
     return storage.setItem(key, value)
   } else if (res) {
-    return res.cookie(key, value, { httpOnly: true, secure: true })
+    return res.cookie(key, value, { secure: process.env.NODE_ENV === 'production' })
   }
 }
 
