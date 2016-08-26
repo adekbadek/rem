@@ -105,8 +105,8 @@ const init = () => {
 
   // clear cookies
   app.get('/logout', function (req, res) {
+    auth.revoke()
     for (var cookie in req.cookies) {
-      auth.revoke()
       res.clearCookie(cookie)
     }
     return res.redirect('/')
